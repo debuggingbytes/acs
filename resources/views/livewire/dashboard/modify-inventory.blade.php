@@ -203,6 +203,7 @@
                         <div class="bg-cyan-700">
                             <h3 class="uppercase text-white font-bold text-center">Image Upload</h3>
                             <div class="bg-white  px-2 py-1">
+                            <div class="bg-yellow-500 rounded-md text-white font-semibold text-center w-full p-2" wire:loading wire:target='uploadImages'>Uploading Photos</div>
                                 <div class="flex items-center justify-center">
                                     <label for="files" class="flex items-center justify-center w-1/5 h-40 text-white font-bold bg-cyan-600 py-2 px-4 rounded-l-md cursor-pointer hover:bg-cyan-700 ">
                                       <span class="text-lg">Choose Files</span>

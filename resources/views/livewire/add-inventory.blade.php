@@ -51,6 +51,7 @@
         <select wire:model='jibType' id="craneType" class="rounded-r-lg border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block w-full p-3 bg-white h-12 appearance-none">
             <option selected value="na">None
             <option value="Fixed Jib">Fixed</option>
+	    <option value="Swing_away_jib">Swing Away</option>
             <option value="Luffing Jib">Luffing</option>
             <option value="Fixed_and_Luffing">Fixed & Luffing</option>
         </select>

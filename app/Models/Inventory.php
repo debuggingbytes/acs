@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Inventory extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
 
     protected $fillable = ['inventoryable_type', 'inventoryable_id', 'cost', 'serial_number', 'is_available', 'is_featured', 'thumbnail'];

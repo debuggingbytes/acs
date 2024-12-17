@@ -86,10 +86,10 @@ class ModifyInventory extends Component
     public function mount(Inventory $inventory, $id)
     {
 
-        $this->inventory = Inventory::whereId($id)->with('craneinventory', 'partinventory', 'images', 'equipmentinventory','customfields')->first();
+        $this->inventory = Inventory::whereId($id)->with('craneinventory', 'partinventory', 'images', 'equipmentinventory', 'customfields')->first();
         // $this->inventory = Inventory::findOrFail($id)->with('craneinventory', 'partinventory', 'images','equipmentinventory','customfields');
         $this->images = $this->inventory->images;
-        $this->imagePaths = $this->inventory->images->pluck('image_path','id')->toArray();
+        $this->imagePaths = $this->inventory->images->pluck('image_path', 'id')->toArray();
 
         $this->cost = $this->inventory->cost;
         $this->is_available = $this->inventory->is_available;
@@ -152,9 +152,9 @@ class ModifyInventory extends Component
     public function moveImagePosition($currentImg, $var)
     {
 
-        if($var == "lower"){
+        if ($var == "lower") {
             $replacementImg = $currentImg--;
-        }else{
+        } else {
             $replacementImg = $currentImg++;
         }
 
@@ -199,8 +199,23 @@ class ModifyInventory extends Component
 
         Storage::disk('public')->delete(Str::replace('/storage/', '', $image));
         Image::whereId($id)->delete();
-        Inventory::whereInventoryableId($this->inventory->inventoryable_id)->update(['thumbnail' => '']);
+        // Inventory::whereInventoryableId($this->inventory->inventoryable_id)->update(['thumbnail' => '']);
 
+        $this->correctImagePosition($this->inventory->id);
+        $this->dispatch('refresh-images');
+    }
+
+    public function correctImagePosition($inventory_id)
+    {
+        $images = Image::where('inventory_id', $inventory_id)->orderBy('image_order')->get();
+        $expected_pos = 0; // Start at our 0 index
+        foreach ($images as $image) {
+            if ($image->image_order != $expected_pos) {
+                $image->image_order = $expected_pos;
+                $image->save();
+            }
+            $expected_pos++;
+        }
         $this->dispatch('refresh-images');
     }
 
@@ -223,7 +238,7 @@ class ModifyInventory extends Component
         $this->inventory->cost = $this->cost;
         $this->inventory->is_available = $this->is_available;
         $this->inventory->is_featured = $this->is_featured;
-        $this->inventory->thumbnail = $this->thumbnail;
+        // $this->inventory->thumbnail = $this->thumbnail;
         $this->inventory->serial_number = $this->serialNumber;
         $craneData = ['slugName', 'year', 'make', 'model', 'subject', 'condition', 'description', 'type', 'jib', 'jibInserts', 'jibType', 'boom', 'capacity', 'hoursLower', 'hoursUpper', 'mileage'];
         $partData = ['slugName', 'year', 'make', 'subject', 'condition', 'description'];
@@ -237,7 +252,7 @@ class ModifyInventory extends Component
             $this->updateRelationship($this->inventory->partInventory, $partData);
             $this->inventory->partInventory->updated_at = now();
             $this->inventory->partInventory->save();
-        }elseif ($this->inventory->inventoryable_type == EquipmentInventory::class) {
+        } elseif ($this->inventory->inventoryable_type == EquipmentInventory::class) {
             $this->updateRelationship($this->inventory->equipmentInventory, $partData);
             $this->inventory->equipmentInventory->updated_at = now();
             $this->inventory->equipmentInventory->save();
@@ -271,16 +286,19 @@ class ModifyInventory extends Component
     public function uploadImage()
     {
 
+        $lastImageOrder = Image::where('inventory_id', $this->inventory->id)->max('image_order') ?? 0;
+        $count = $lastImageOrder;
+
         if (is_array($this->uploadImages)) {
-            $lastImageOrder = Image::where('inventory_id', $this->inventory->id)->orderBy('image_order', 'desc')->first();
             foreach ($this->uploadImages as $upload) {
                 if ($upload->isValid()) {
-                    $image_name = $this->slugName.'_'.Str::uuid().'.'.$upload->getClientOriginalExtension();
+                    $image_name = $this->slugName . '_' . Str::uuid() . '.' . $upload->getClientOriginalExtension();
                     $image_path = "storage/inventory/{$this->inventory->id}";
+
                     $image = new Image();
                     $image->image_path = "$image_path/$image_name";
                     $image->inventory_id = $this->inventory->id;
-                    $image->image_order = $lastImageOrder->image_order + 1;
+                    $image->image_order = ++$count;
                     $image->save();
                     $image_path = "inventory/{$this->inventory->id}";
 
@@ -290,7 +308,7 @@ class ModifyInventory extends Component
 
                 }
             }
-            unset($this->uploadImages);
+            $this->uploadImages = [];
         }
 
         $modalMessage = [
@@ -303,10 +321,11 @@ class ModifyInventory extends Component
     }
 
 
-    public function deleteInventory($id){
+    public function deleteInventory($id)
+    {
 
         $inventory = Inventory::findOrFail($id);
-        if($inventory){
+        if ($inventory) {
             $inventory->craneInventory()->delete() ?? $inventory->partInventory()->delete() ?? $inventory->equipmentInventory()->delete();
             Storage::disk('public')->deleteDirectory("/inventory/$id");
             $inventory->images()->delete();

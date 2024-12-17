@@ -1,7 +1,7 @@
 <div>
     @if (!empty($cranes))
     @foreach ($cranes as $crane)
-        <div class="slide  current">
+        <div class="slide  @if($loop->first) current @endif">
             @php
                 if($crane->craneInventory){
                     $route = "crane";

@@ -40,23 +40,23 @@ class Handler extends ExceptionHandler
         });
     }
 
-//     public function report(Throwable $exception)
-// {
-//     if ($this->shouldReport($exception)) {
-//         // The exception should be reported, so send an email
-//         Mail::raw(
-//             "Exception Details:\n\n" .
-//             "Message: " . $exception->getMessage() . "\n" .
-//             "File: " . $exception->getFile() . "\n" .
-//             "Line: " . $exception->getLine() . "\n" .
-//             "Trace: " . $exception->getTraceAsString(),
-//             function ($message) {
-//                 $message->to('errors@albertacraneservice.com');
-//                 $message->subject('An exception was thrown');
-//             }
-//         );
-//     }
+    // public function report(Throwable $exception){
+    // if ($this->shouldReport($exception)) {
+    //     // The exception should be reported, so send an email
+    //     Mail::raw(
+    //         "URL Requested: " . request()->fullUrl() . "\n\n" .
+    //         "Link Clicked" . request()->headers->get('referer') . "\n\n" .
+    //         "Exception Details:\n\n" .
+    //         "Message: " . $exception->getMessage() . "\n" .
+    //         "File: " . $exception->getFile() . "\n" .
+    //         "Line: " . $exception->getLine() . "\n" .
+    //         "Trace: " . $exception->getTraceAsString(),
+    //         function ($message) {
+    //             $message->to('errors@albertacraneservice.com');
+    //             $message->subject('An exception was thrown');
+    //         });
+    // }
 
-//     parent::report($exception);
-// }
+    //     parent::report($exception);
+    // }
 }

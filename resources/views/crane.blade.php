@@ -21,8 +21,7 @@ Used {{$inventory->craneInventory->year}} {{$inventory->craneInventory->subject}
 vh-50
 @endsection
 @section('hero')
-<img src="{{ asset($inventory->thumbnail) }}" alt="@yield('bg-alt')" class="w-full h-full object-cover absolute inset-0">
-
+  style='background-image: url("{{$inventory->thumbnail}}"); background-position: center center; background-size: cover;'
 @endsection
 @section('h1-text')
   <h1 class="text-white uppercase font-bold text-2xl lg:text-4xl">Used {{$inventory->craneInventory->year}} {{$inventory->craneInventory->make}} {{$inventory->craneInventory->model}} for sale</h1>
@@ -36,7 +35,7 @@ vh-50
 <section class="py-10">
 <livewire:count-live-views />
   <div class="md:container md:mx-auto p-4 ">
-    <div class="p-2 relative">
+    <div class="p-2 relative w-full">
         @if(!$inventory->is_available)
         <div class="absolute inset-1 z-[9] h-full rounded-lg">
             <div class="flex w-100 z-20 h-full justify-center items-center">
@@ -47,19 +46,19 @@ vh-50
       <h2 class="uppercase text-cyan-800 text-2xl lg:text-4xl font-bold">Used {{ $inventory->craneInventory->year }} {{ $inventory->craneInventory->subject }} for sale</h2>
       <p class="font-medium text-xl pt-5">Alberta Crane Service Ltd is proud to present the {{$inventory->craneInventory->year}} {{ $inventory->craneInventory->subject}} for sale. This equipment is currently listed in {{ $inventory->craneInventory->condition }} condition. The {{$inventory->craneInventory->year}} {{ $inventory->craneInventory->subject }} is classified as a {{ $inventory->craneInventory->ReadableType }}.
       @if (!empty($inventory->craneInventory->boom))
-      This {{ $inventory->craneInventory->make }} comes with {{$inventory->craneInventory->boom}}' of boom
+      This {{ $inventory->craneInventory->make }} comes with {{$inventory->craneInventory->boom}}{{!Str::endsWith($inventory->boom, "'") ? "'" : '';}} of boom
         @if (!empty($inventory->craneInventory->jib))
-        , and {{$inventory->craneInventory->jib}}' of jib.
+         and {{$inventory->craneInventory->jib}}{{!Str::endsWith($inventory->jib, "'") ? "'" : '';}} of jib.
         @else
           .
         @endif
       @endif
     </p>
 
-      <div class="flex-rows lg:flex pt-12 gap-5">
+      <div class="flex-rows lg:flex pt-12 gap-5 w-full">
         <div class="w-full lg:w-3/5 pb-10 lg:pb-0 relative rounded-xl p-2 bg-neutral-100 shadow-lg">
             <div class="w-full overflow-hidden transition-all duration-500 ease-in-out ">
-              <img src='{{ $inventory->images[0]->image_path }}' title='{{$inventory->craneInventory->year}} {{$inventory->craneInventory->subject}} for sale' class="w-full h-full craneImg rounded-xl" alt="{{ $inventory->craneInventory->subject }} for sale"/>
+              <img src='{{ $inventory->images[0]->image_path }}' title='{{$inventory->craneInventory->year}} {{$inventory->craneInventory->subject}} for sale' class="w-full h-full max-h-96 object-contain craneImg rounded-xl" alt="{{ $inventory->craneInventory->subject }} for sale"/>
             </div>
             <div class="overflow-x-scroll snap-x flex gap-0.5 mt-2 rounded-md">
               @foreach ($inventory->images->sortBy('image_order') as $image)
@@ -178,28 +177,15 @@ vh-50
       <div class="bg-neutral-50 mt-5 rounded-lg shadow-lg">
         <h4 class="block md:rounded-t-lg p-2 lg:text-center bg-cyan-600 text-white uppercase font-semibold text-xl lg:text-2xl">Additional Information</h4>
         <div class="rounded-xl w-full lg:text-center lg:w-4/5 lg:mx-auto overflow-hidden p-2">
-            @bb($inventory->craneInventory->description)
+            @bb(nl2br($inventory->craneInventory->description))
         </div>
      </div>
-      <div class="flex-rows md:flex w-100 md:justify-between pt-10">
-        {{-- <div class="uppercase text-xl font-medium text-cyan-800">
-          @if (!empty($prev->subject))
-            <a href="{{ route('crane', ['id' => $prev->id, 'slug' => $prev->slugName]) }}" class="underline">{{ $prev->subject }}</a>
-          @else
-            {{$prev}}
-          @endif
+      <div class="bg-neutral-50 mt-5 rounded-lg shadow-lg w-full block">
+        <h4 class="block md:rounded-t-lg p-2 lg:text-center bg-cyan-600 text-white uppercase font-semibold sm:text-lg lg:text-2xl">Related Inventory to {{ $inventory->craneInventory->subject }}</h4>
+        <div class="rounded-xl w-full p-2">
+            <livewire:inventory.related :inventory="$inventory"/>
         </div>
-        <div class="uppercase text-xl font-medium text-cyan-800">
-
-          @if (!empty($next->subject))
-            <a href="{{ route('crane', ['id' => $next->id, 'slug' => $next->slugName]) }}" class="underline">{{ $next->subject }}</a>
-          @else
-            {{$next}}
-          @endif
-        </div> --}}
-
-      </div>
-    </div>
+     </div>
   </div>
   <div class="w-3/4 mx-auto mt-10">
     <p class="pt-5 text-xl font-medium">
