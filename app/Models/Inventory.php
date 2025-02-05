@@ -24,7 +24,7 @@ class Inventory extends Model
 
     public function craneInventory()
     {
-        return $this->hasOne(CraneInventory::class);
+        return $this->hasOne(CraneInventory::class)->withDefault(false);
     }
 
     public function partInventory()
@@ -47,7 +47,8 @@ class Inventory extends Model
         return $this->hasMany(Image::class);
     }
 
-    public function uniqueViews(): HasMany{
+    public function uniqueViews(): HasMany
+    {
         return $this->hasMany(UniqueInventoryView::class);
     }
 
@@ -56,9 +57,10 @@ class Inventory extends Model
         return strip_tags($this->description, '<br>');
     }
 
-    public function getThumbnailAttribute($value){
-        if(!Str::startsWith($value, '/')){
-            return '/'.$value;
+    public function getThumbnailAttribute($value)
+    {
+        if (! Str::startsWith($value, '/')) {
+            return '/' . $value;
         }
         return $value;
     }

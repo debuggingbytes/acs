@@ -56,6 +56,7 @@ class AddInventory extends Component
 
     protected $rules = [
         'year' => 'required|numeric|min:1900|', // Numeric year between 1900 and current year
+        'type' => 'required|string|max:255', // Required string up to 255 characters
         'make' => 'required|string|max:255', // Required string up to 255 characters
         'model' => 'required|string|max:255', // Required string up to 255 characters
         'boom' => 'nullable', // Nullable numeric, minimum value 0
@@ -68,11 +69,13 @@ class AddInventory extends Component
         Methods involving crane types
 
     */
-    public function showType(){
-        $this->addNewCraneTypeShow = !$this->addNewCraneTypeShow;
+    public function showType()
+    {
+        $this->addNewCraneTypeShow = ! $this->addNewCraneTypeShow;
     }
 
-    public function addCraneType(){
+    public function addCraneType()
+    {
         CraneType::firstOrCreate([
             'type' => Str::lower(Str::replace(' ', '_', $this->addNewCraneType)),
             'text' => $this->addNewCraneType
@@ -82,8 +85,9 @@ class AddInventory extends Component
     }
 
     #[On('newCraneType')]
-    public function refreshCraneTypes(){
-      $this->types = CraneType::all();
+    public function refreshCraneTypes()
+    {
+        $this->types = CraneType::all();
     }
 
     /**
@@ -107,16 +111,18 @@ class AddInventory extends Component
      * Image methods
      */
 
-     public function updatedNewImages(){
+    public function updatedNewImages()
+    {
         $this->images = array_merge($this->images, $this->newImages);
         $this->newImages = [];
-     }
+    }
 
-     public function removeImage($id){
+    public function removeImage($id)
+    {
         unset($this->images[$id]);
-     }
+    }
 
-     public function moveImage($from, $to)
+    public function moveImage($from, $to)
     {
         if (isset($this->images[$from]) && isset($this->images[$to])) {
             // Remove image from current position
@@ -126,7 +132,8 @@ class AddInventory extends Component
             array_splice($this->images, $to, 0, [$image]); // Note the brackets around $image
         }
     }
-    private function watermarkImage($img){
+    private function watermarkImage($img)
+    {
         // dd($img);
         $manager = new ImageManager(new Driver());
         $image = $manager->read($img);
@@ -134,7 +141,8 @@ class AddInventory extends Component
         $image->place($watermark, 'bottom-right', 10, 10, 90);
         $image->save($img);
     }
-    private function convertToWebp($img){
+    private function convertToWebp($img)
+    {
         $manager = new ImageManager(new Driver());
         $image = $manager->read($img);
         $img = Str::replace('.jpg', '.webp', $img);
@@ -144,12 +152,14 @@ class AddInventory extends Component
     }
     // ** Custom Fields ** /
 
-    public function addCustomField(){
+    public function addCustomField()
+    {
         array_push($this->customFields, [$this->customKey => $this->customValue]);
         $this->customKey = '';
         $this->customValue = '';
     }
-    public function removeCustom($index){
+    public function removeCustom($index)
+    {
         unset($this->customFields[$index]);
     }
 
@@ -162,14 +172,14 @@ class AddInventory extends Component
     public function save()
     {
 
-        if($this->customKey != '' || $this->customValue != ''){
+        if ($this->customKey != '' || $this->customValue != '') {
             session()->flash('error', 'You did not save the custom field, please try again.');
             return false;
         }
         $this->validate();
 
-        $slugName = Str::slug($this->year.' '.$this->make.' '.$this->model);
-        if(empty($this->cost)){
+        $slugName = Str::slug($this->year . ' ' . $this->make . ' ' . $this->model);
+        if (empty($this->cost)) {
             $this->cost = "Inquire";
         }
 
@@ -187,7 +197,7 @@ class AddInventory extends Component
             'type' => $this->type,
             'make' => $this->make,
             'model' => $this->model,
-            'subject' => $this->make.' '.$this->model,
+            'subject' => $this->make . ' ' . $this->model,
             'year' => $this->year,
             'capacity' => $this->capacity,
             'boom' => $this->boom,
@@ -200,7 +210,7 @@ class AddInventory extends Component
             'condition' => $this->condition,
             'description' => $this->description,
         ]);
-        if (!empty($this->customFields)) {
+        if (! empty($this->customFields)) {
             foreach ($this->customFields as $field) {
                 foreach ($field as $key => $value) {
                     $customField = new CustomField();
@@ -216,10 +226,10 @@ class AddInventory extends Component
         $count = 0;
         $image_order = 0;
 
-        if (is_array($this->images)) {
+        if (is_array($this->images) && count($this->images) > 0) {
             foreach ($this->images as $img) {
                 if ($img->isValid()) {
-                    $image_name = $slugName.'_'.Str::uuid().'.'.$img->getClientOriginalExtension();
+                    $image_name = $slugName . '_' . Str::uuid() . '.' . $img->getClientOriginalExtension();
                     // $image_path = "/storage/inventory/{$inventory->id}";
                     $image = new Image();
                     $image->inventory_id = $inventory->id;
@@ -229,7 +239,7 @@ class AddInventory extends Component
                     $location = "storage/inventory/{$inventory->id}/$image_name";
                     $this->watermarkImage($location);
                     $converted = $this->convertToWebp($location);
-                    Storage::disk('public')->delete('inventory/'.$inventory->id.'/'.$image_name);
+                    Storage::disk('public')->delete('inventory/' . $inventory->id . '/' . $image_name);
                     $image->image_path = $converted;
                     $image->save();
                     $image_order++;
@@ -241,11 +251,14 @@ class AddInventory extends Component
                     $count++;
                 }
             }
+        } else {
+            $inventory->thumbnail = 'img/coming-soon.png';
+            $inventory->save();
         }
 
         $modalMessage = [
             'heading' => 'Inventory Added',
-            'message' => 'We have successfully added '.$this->subject.' to the database, this item is currently live on the website',
+            'message' => 'We have successfully added ' . $this->subject . ' to the database, this item is currently live on the website',
         ];
         $this->dispatch('show-modal', 'success', $modalMessage)->to(InfoModal::class);
         $this->resetExcept(['types']);
@@ -255,7 +268,7 @@ class AddInventory extends Component
     {
         $this->types = CraneType::all();
         $this->rules = [
-            'year' => 'required|numeric|min:1900|max:'.date('Y'),
+            'year' => 'required|numeric|min:1900|max:' . date('Y'),
         ];
     }
 

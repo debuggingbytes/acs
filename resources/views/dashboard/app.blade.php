@@ -61,27 +61,33 @@
                         <strong>Inventory</strong>
                     </h3>
                     <ul class="space-y-2 p-4">
-                        <a href='{{ route('add.crane.inventory') }}' wire:navigate><li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                            Add Crane
-                        </li></a>
-                        <a href='{{ route('add.part.inventory') }}' wire:navigate><li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                            Add Part
-                        </li></a>
-                        <a href='{{ route('add.equipment.inventory') }}' wire:navigate>
-                        <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                            Add Equipment
-                        </li></a>
+                        <a href='{{ route('add.crane.inventory') }}' wire:navigate>
+                            <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
+                            Add New Crane
+                            </li>
+                        </a>
                         <a href='{{ route('show.inventory') }}' wire:navigate>
-                        <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                            Show Inventory
-                        </li></a>
+                            <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
+                                Show Inventory
+                            </li>
+                        </a>
+                        <a href='{{ route('add.part.inventory') }}' wire:navigate>
+                            <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
+                                Add Part
+                            </li>
+                        </a>
+                        <a href='{{ route('add.equipment.inventory') }}' wire:navigate>
+                            <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
+                                Add Equipment
+                            </li>
+                        </a>
 
-                        <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
+                        {{-- <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
                             Add Crane Categories
                         </li>
                         <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
                             Add Part Categories
-                        </li>
+                        </li> --}}
                     </ul>
                 </div>
                 <div class="bg-slate-100 shadow-md rounded-md">
@@ -108,7 +114,7 @@
   </main>
   <div class="block p-2 bg-slate-200">&nbsp;</div>
   <!-- end main content -->
-  <script src="{{ asset('/js/scripts.js') }}"></script>
+  <script src="{{ asset('js/scripts.js') }}"></script>
   @livewireScripts
   @yield('scripts')
 </body>

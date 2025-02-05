@@ -38,6 +38,8 @@ class ModifyInventory extends Component
     public $is_available;
 
     public $is_featured;
+    public $is_public;
+
 
     public $thumbnail;
 
@@ -94,6 +96,7 @@ class ModifyInventory extends Component
         $this->cost = $this->inventory->cost;
         $this->is_available = $this->inventory->is_available;
         $this->is_featured = $this->inventory->is_featured;
+        $this->is_public = $this->inventory->is_public;
         $this->thumbnail = $this->inventory->thumbnail;
         $this->serialNumber = $this->inventory->serial_number;
         $this->slugName =
@@ -238,6 +241,7 @@ class ModifyInventory extends Component
         $this->inventory->cost = $this->cost;
         $this->inventory->is_available = $this->is_available;
         $this->inventory->is_featured = $this->is_featured;
+        $this->inventory->is_public = $this->is_public;
         // $this->inventory->thumbnail = $this->thumbnail;
         $this->inventory->serial_number = $this->serialNumber;
         $craneData = ['slugName', 'year', 'make', 'model', 'subject', 'condition', 'description', 'type', 'jib', 'jibInserts', 'jibType', 'boom', 'capacity', 'hoursLower', 'hoursUpper', 'mileage'];
@@ -292,7 +296,7 @@ class ModifyInventory extends Component
         if (is_array($this->uploadImages)) {
             foreach ($this->uploadImages as $upload) {
                 if ($upload->isValid()) {
-                    $image_name = $this->slugName . '_' . Str::uuid() . '.' . $upload->getClientOriginalExtension();
+                    $image_name = $this->slugName.'_'.Str::uuid().'.'.$upload->getClientOriginalExtension();
                     $image_path = "storage/inventory/{$this->inventory->id}";
 
                     $image = new Image();

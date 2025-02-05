@@ -8,8 +8,16 @@
         <x-forms.checkbox-toggle label="Available" livewire="is_available"/>
         <x-forms.checkbox-toggle label="Featured" livewire="is_featured"/>
     </div>
+    @if($errors->any())
+        <div class="bg-red-500 w-1/2 mx-auto rounded-md my-5 p-3">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li class="text-white">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="flex flex-col md:flex-row items-center py-2 relative">
-
         <label for="type" class="text-white font-bold text-lg uppercase bg-cyan-600 px-3 rounded-l-lg h-12 flex items-center justify-center w-full md:w-1/5">Crane Type</label>
         <select id="type" name="type" wire:model='type' class="rounded-r-lg border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block w-full p-3 bg-white h-12 appearance-none">
             <option selected disabled value="null">Select Crane Type</option>

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Inventory;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -18,28 +19,40 @@ class ShowInventory extends Component
     public $selectedMake;
     public $selectedModel;
     public $selectedYear;
+    public $trashed;
+    public $withInactive = false;
 
 
 
 
-    public function editInventory($id){
+    public function editInventory($id)
+    {
         $this->redirectRoute('edit.inventory', ['id' => $id]);
     }
 
 
-    public function updated($propertyName){
+    public function updated($propertyName)
+    {
         $this->filterInventories();
     }
 
-    public function resetFilter(){
-        $this->reset(['selectedMake','selectedModel','selectedYear']);
+    public function resetFilter()
+    {
+        $this->reset(['selectedMake', 'selectedModel', 'selectedYear']);
         return $this->filterInventories();
         // return $this->filterInventories()
     }
 
-    public function filterInventories(){
+    public function toggleAvailable()
+    {
+        $this->withInactive = ! $this->withInactive;
+        $this->dispatch('refresh-inventory');
+    }
 
-        $query = Inventory::with('craneinventory', 'partinventory', 'images','equipmentinventory','customfields');
+    #[On('refresh-inventory')]
+    public function filterInventories()
+    {
+        $query = Inventory::with('craneinventory', 'partinventory', 'images', 'equipmentinventory', 'customfields');
 
         if ($this->selectedMake) {
             $query->where(function ($query) {
@@ -70,8 +83,11 @@ class ShowInventory extends Component
                 });
             });
         }
-
+        if (! $this->withInactive) {
+            $query->where('is_available', 1);
+        }
         $this->inventories = $query->get();
+        $this->trashed = $query->withTrashed()->get();
 
     }
 

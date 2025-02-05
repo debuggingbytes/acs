@@ -1,3 +1,3 @@
-<div>
- <input type="hidden">
+<div class='hidden'>
+    LiveView Counter
 </div>

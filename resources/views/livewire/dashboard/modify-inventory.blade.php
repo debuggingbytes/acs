@@ -61,6 +61,8 @@
                     <div class="flex flex-col gap-2 pb-5 lg:pb-2 lg:flex-row justify-evenly mx-auto w-2/3">
                         <x-forms.checkbox-toggle label="Available" livewire="is_available" :truthy="$this->is_available"/>
                         <x-forms.checkbox-toggle label="Featured" livewire="is_featured" :truthy="$this->is_featured"/>
+                        <x-forms.checkbox-toggle label="Public" livewire="is_public" :truthy="$this->is_public"/>
+                    </div>
                     </div>
                     <x-forms.label-input name="Price" label="Price" livewire="cost" />
                     <x-forms.label-input name="Slug" label="Url Slug" livewire="slugName" disabled="true"/>

@@ -115,7 +115,7 @@ document.addEventListener("livewire:navigated", () => {
   const next = document?.querySelector('#next')
   const prev = document?.querySelector('#prev')
   const auto = true;
-  const intervalTime = 2500;
+  const intervalTime = 4500;
   let slideInterval;
 
   const nextSlide = () => {
@@ -129,7 +129,7 @@ document.addEventListener("livewire:navigated", () => {
     } else {
       slides[0]?.classList.add('current')
     }
-    setTimeout(() => current?.classList.remove('.current'))
+    setTimeout(() => current?.classList.remove('.current'), intervalTime)
   }
 
   const prevSlide = () => {

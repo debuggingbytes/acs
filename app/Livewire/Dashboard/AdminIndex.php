@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Storage;
 class AdminIndex extends Component
 {
     public $inventories;
+    public $mostCommonType;
+    public int $totalImages;
     // Google properties;
     public $googlePageVisits;
     public $googleTotalVisitorsAndPages;
@@ -28,32 +30,51 @@ class AdminIndex extends Component
 
 
     // File Methods
-    public function getTempStorage(){
+    public function getTempStorage()
+    {
         $this->tempStorageSize = 0;
         foreach (File::allFiles(base_path('storage/app/livewire-tmp')) as $file) {
             $this->tempStorageSize += $file->getSize();
         }
     }
-    public function purgeTempStorage(){
-        foreach (Storage::disk('local')->allFiles('livewire-tmp') as $file){
+    public function purgeTempStorage()
+    {
+        foreach (Storage::disk('local')->allFiles('livewire-tmp') as $file) {
             Storage::disk('local')->delete($file);
         }
         $this->dispatch('updateTmpStorage');
     }
     #[On('updateTmpStorage')]
-    public function updatedTempStorageSize(){
+    public function updatedTempStorageSize()
+    {
         $this->getTempStorage();
         return Number::fileSize($this->tempStorageSize);
     }
 
     public function mount()
     {
-        $this->inventories = Inventory::with('craneinventory', 'partinventory')->get();
-        $this->googlePageVisits = Analytics::fetchMostVisitedPages(Period::days(7),$maxResults=5);
+        $this->inventories = Inventory::with('craneInventory', 'partInventory')->get();
+        $type = Inventory::with('craneInventory', 'partInventory')
+            ->whereHas('craneInventory', function ($query) {
+                $query->where('type', '!=', null)
+                    ->select('type')
+                    ->groupBy('type')
+                    ->orderByRaw('COUNT(*) DESC');
+            })
+            ->orWhereHas('partInventory', function ($query) {
+                $query->where('type', '!=', null)
+                    ->select('type')
+                    ->groupBy('type')
+                    ->orderByRaw('COUNT(*) DESC');
+            })
+            ->first();
+        $this->totalImages = Inventory::withCount('images')->get()->sum('images_count');
+        $this->mostCommonType = $type->craneInventory->type ?? $type->partInventory->type;
+        $this->googlePageVisits = Analytics::fetchMostVisitedPages(Period::days(7), $maxResults = 5);
         //organicGoogleSearchImpressions
-        $this->searchImpressions = Analytics::get(Period::days(7), ['organicGoogleSearchImpressions'],['Country'], $maxResults=5);
-        $this->googleTopCountries = Analytics::fetchTopCountries(Period::days(7),$maxResults=5);
-        $this->googleTotalVisitorsAndPages = Analytics::fetchVisitorsAndPageViews(Period::days(7),$maxResults=5);
+        $this->searchImpressions = Analytics::get(Period::days(7), ['organicGoogleSearchImpressions'], ['Country'], $maxResults = 5);
+        $this->googleTopCountries = Analytics::fetchTopCountries(Period::days(7), $maxResults = 5);
+        $this->googleTotalVisitorsAndPages = Analytics::fetchVisitorsAndPageViews(Period::days(7), $maxResults = 5);
         $this->getTempStorage();
         $this->tempStorageSize = Number::fileSize($this->tempStorageSize);
 

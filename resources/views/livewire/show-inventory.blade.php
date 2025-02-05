@@ -22,6 +22,10 @@
                     @endforeach
                 </select>
                 <button class="px-3 py-1.5 bg-amber-500 text-white uppercase rounded-xl shadow-md font-bold" wire:click.prevent='resetFilter'>Reset</button>
+                <div class="block">
+                    Toggle Unavailable Inventory
+                    <input type="checkbox" wire:click='toggleAvailable'>
+                </div>
             </div>
             <div class="overflow-hidden  border-2 rounded-lg w-full">
                 <div class="bg-cyan-700 px-2 py-1">

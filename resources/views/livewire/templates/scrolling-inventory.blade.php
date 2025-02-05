@@ -14,7 +14,7 @@
         <a href='{{ route($route, ['id' => $crane->id, 'slug' => $crane->craneInventory->slugName ?? $crane->partInventory->slugName ?? $crane->equipmentInventory->slugName]) }}'>
         <div class="w-full h-full">
             <img
-            src="{{ $crane->images[0]->image_path }}"
+            src="{{ $crane->thumbnail}}"
             alt="{{ ($crane->craneInventory->year ?? $crane->equipmentInventory->year ?? $crane->partInventory->year)." ". ($crane->craneInventory->subject ?? $crane->equipmentInventory->subject ?? $crane->partInventory->make) }}"
             class="object-fit w-full h-full" loading="lazy">
         </div>
