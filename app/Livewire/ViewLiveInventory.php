@@ -5,7 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\Url;
 use App\Models\Inventory;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;  // Import DB
+use Illuminate\Support\Facades\Cache; // Import Cache
 use Illuminate\Support\Str;
 
 class ViewLiveInventory extends Component
@@ -14,9 +15,9 @@ class ViewLiveInventory extends Component
     public $query = '';
     public $inventories;
     public $totalResults;
-    public $makes;
-    public $models;
-    public $years;
+    public $makes = [];
+    public $models = [];
+    public $years = [];
     public $selectedMake;
     public $selectedModel;
     public $selectedYear;
@@ -24,148 +25,222 @@ class ViewLiveInventory extends Component
     public function searchInventory()
     {
         $validatedData = $this->validate([
-            'query' => ['required', 'regex:/^[\pL\s\d]+$/u'],
+            'query' => ['required', 'regex:/^[\p{L}\s\d]+$/u'], // Correct regex
         ]);
         $this->query = Str::replace('-', '&dash;', $this->query);
 
-        if (isset($validatedData['query'])) {
+        $this->inventories = $this->performSearch();
+        $this->totalResults = $this->inventories->count();
+    }
+
+    private function performSearch()
+    {
+        $cacheKey = 'inventory_search:'.md5(serialize([$this->query, $this->selectedMake, $this->selectedModel, $this->selectedYear]));
+        $cacheTime = now()->addHours(20); // 20-hour cache
+
+        return Cache::remember($cacheKey, $cacheTime, function () {
             $keywords = array_map(function ($keyword) {
                 return str_replace('%', '\\%', $keyword);
             }, explode(' ', $this->query));
 
-            if (empty($keywords)) {
-                $this->inventories = Inventory::where(function ($query) {
-                    $query->where('is_available', true)
-                        ->where('is_public', true)
-                        ->orWhere('updated_at', '>=', now()->subDays(30));
-                })
-                    ->with('craneinventory', 'partinventory', 'equipmentinventory', 'images')
-                    ->get();
-                return;
-            }
+            $query = Inventory::select(
+                'inventories.*',
+                'crane_inventories.readabletype as crane_readabletype',
+                'crane_inventories.year as crane_year',
+                'crane_inventories.subject as crane_subject',
+                'crane_inventories.capacity as crane_capacity',
+                'crane_inventories.condition as crane_condition',
+                'crane_inventories.slug_name as crane_slug_name',
+                'crane_inventories.description as crane_description',
+                'part_inventories.readabletype as part_readabletype',
+                'part_inventories.year as part_year',
+                'part_inventories.subject as part_subject',
+                'part_inventories.capacity as part_capacity',
+                'part_inventories.condition as part_condition',
+                'part_inventories.slug_name as part_slug_name',
+                'part_inventories.description as part_description',
+                'equipment_inventories.readabletype as equipment_readabletype',
+                'equipment_inventories.year as equipment_year',
+                'equipment_inventories.subject as equipment_subject',
+                'equipment_inventories.capacity as equipment_capacity',
+                'equipment_inventories.condition as equipment_condition',
+                'equipment_inventories.slug_name as equipment_slug_name',
+                'equipment_inventories.description as equipment_description'
+            )
+                ->leftJoin('crane_inventories', 'inventories.id', '=', 'crane_inventories.inventory_id')
+                ->leftJoin('part_inventories', 'inventories.id', '=', 'part_inventories.inventory_id')
+                ->leftJoin('equipment_inventories', 'inventories.id', '=', 'equipment_inventories.inventory_id')
+                ->where(function ($query) {
+                    $query->where('inventories.is_available', true)
+                        ->where('inventories.is_public', true)
+                        ->orWhere('inventories.updated_at', '>=', now()->subDays(30));
+                });
 
-            $this->inventories = Inventory::when($this->query, function ($query) use ($keywords) {
+            if (! empty($keywords)) {
                 $query->where(function ($subQuery) use ($keywords) {
                     foreach ($keywords as $keyword) {
-                        $subQuery->orWhereHas('craneinventory', function ($craneSubQuery) use ($keyword) {
-                            $craneSubQuery->where('make', 'LIKE', "%{$keyword}%")
-                                ->orWhere('model', 'LIKE', "%{$keyword}%")
-                                ->orWhere('description', 'LIKE', "%{$keyword}%")
-                                ->orWhere('year', 'LIKE', "%{$keyword}%")
-                                ->orWhere('condition', 'LIKE', "%{$keyword}%")
-                                ->orWhere('capacity', 'LIKE', "%{$keyword}%");
-                        })
-                            ->orWhereHas('partinventory', function ($partSubQuery) use ($keyword) {
-                                $partSubQuery->where('make', 'LIKE', "%{$keyword}%")
-                                    ->orWhere('description', 'LIKE', "%{$keyword}%")
-                                    ->orWhere('year', 'LIKE', "%{$keyword}%")
-                                    ->orWhere('condition', 'LIKE', "%{$keyword}%");
-                            })
-                            ->orWhereHas('equipmentinventory', function ($partSubQuery) use ($keyword) {
-                                $partSubQuery->where('make', 'LIKE', "%{$keyword}%")
-                                    ->orWhere('description', 'LIKE', "%{$keyword}%")
-                                    ->orWhere('year', 'LIKE', "%{$keyword}%")
-                                    ->orWhere('condition', 'LIKE', "%{$keyword}%");
-                            });
+                        $subQuery->orWhere('crane_inventories.make', 'LIKE', "%{$keyword}%")
+                            ->orWhere('crane_inventories.model', 'LIKE', "%{$keyword}%")
+                            ->orWhere('crane_inventories.description', 'LIKE', "%{$keyword}%")
+                            ->orWhere('crane_inventories.year', 'LIKE', "%{$keyword}%")
+                            ->orWhere('crane_inventories.condition', 'LIKE', "%{$keyword}%")
+                            ->orWhere('crane_inventories.capacity', 'LIKE', "%{$keyword}%")
+                            ->orWhere('part_inventories.make', 'LIKE', "%{$keyword}%")
+                            ->orWhere('part_inventories.description', 'LIKE', "%{$keyword}%")
+                            ->orWhere('part_inventories.year', 'LIKE', "%{$keyword}%")
+                            ->orWhere('part_inventories.condition', 'LIKE', "%{$keyword}%")
+                            ->orWhere('equipment_inventories.make', 'LIKE', "%{$keyword}%")
+                            ->orWhere('equipment_inventories.description', 'LIKE', "%{$keyword}%")
+                            ->orWhere('equipment_inventories.year', 'LIKE', "%{$keyword}%")
+                            ->orWhere('equipment_inventories.condition', 'LIKE', "%{$keyword}%");
                     }
                 });
-            })
-                ->where(function ($query) {
-                    $query->where('is_available', true)
-                        ->where('is_public', true)
-                        ->orWhere('updated_at', '>=', now()->subDays(30));
-                })
-                ->with('craneinventory', 'partinventory', 'images', 'equipmentinventory')
+            }
+
+            if ($this->selectedMake) {
+                $query->where(function ($q) {
+                    $q->where('crane_inventories.make', $this->selectedMake)
+                        ->orWhere('part_inventories.make', $this->selectedMake)
+                        ->orWhere('equipment_inventories.make', $this->selectedMake);
+                });
+            }
+
+            if ($this->selectedModel) {
+                $query->where('crane_inventories.model', $this->selectedModel);
+            }
+
+            if ($this->selectedYear) {
+                $query->where(function ($q) {
+                    $q->where('crane_inventories.year', $this->selectedYear)
+                        ->orWhere('part_inventories.year', $this->selectedYear)
+                        ->orWhere('equipment_inventories.year', $this->selectedYear);
+                });
+            }
+
+            return $query->with('images')
+                ->orderBy('inventories.is_featured', 'desc')
+                ->orderBy('crane_inventories.readabletype', 'asc') // Or your preferred secondary sort
                 ->get();
-        } else {
-            $this->inventories = Inventory::where(function ($query) {
-                $query->where('is_available', true)
-                    ->where('is_public', true)
-                    ->orWhere('updated_at', '>=', now()->subDays(30));
-            })
-                ->with('craneinventory', 'partinventory', 'equipmentinventory', 'images')
-                ->get();
-        }
-        $this->totalResults = $this->inventories->count();
+        });
     }
+
 
     public function updated($propertyName)
     {
-        Log::info("Property {$propertyName} was updated with value: {$this->$propertyName}");
         $this->filterInventories();
     }
 
     public function resetFilter()
     {
         $this->reset(['selectedMake', 'selectedModel', 'selectedYear']);
-        return $this->filterInventories();
+        $this->filterInventories();
     }
 
     public function filterInventories()
     {
-        $query = Inventory::where(function ($subQuery) {
-            $subQuery->where('is_available', true)
-                ->where('is_public', true)
-                ->orWhere('updated_at', '>=', now()->subDays(30));
-        })->with('craneinventory', 'partinventory', 'images', 'equipmentinventory', 'customfields');
+        $cacheKey = 'inventory_filter:'.md5(serialize([$this->selectedMake, $this->selectedModel, $this->selectedYear]));
+        $cacheTime = now()->addHours(20);
 
-        if ($this->selectedMake) {
-            $query->where(function ($query) {
-                $query->whereHas('craneinventory', function ($query) {
-                    $query->where('make', '=', $this->selectedMake);
-                })->orWhereHas('partinventory', function ($query) {
-                    $query->where('make', '=', $this->selectedMake);
-                })->orWhereHas('equipmentinventory', function ($query) {
-                    $query->where('make', '=', $this->selectedMake);
+        $this->inventories = Cache::remember($cacheKey, $cacheTime, function () {
+            $query = Inventory::select(
+                'inventories.*',
+                'crane_inventories.readabletype as crane_readabletype',
+                'crane_inventories.year as crane_year',
+                'crane_inventories.subject as crane_subject',
+                'crane_inventories.capacity as crane_capacity',
+                'crane_inventories.condition as crane_condition',
+                'crane_inventories.slug_name as crane_slug_name',
+                'crane_inventories.description as crane_description',
+                'part_inventories.readabletype as part_readabletype',
+                'part_inventories.year as part_year',
+                'part_inventories.subject as part_subject',
+                'part_inventories.capacity as part_capacity',
+                'part_inventories.condition as part_condition',
+                'part_inventories.slug_name as part_slug_name',
+                'part_inventories.description as part_description',
+                'equipment_inventories.readabletype as equipment_readabletype',
+                'equipment_inventories.year as equipment_year',
+                'equipment_inventories.subject as equipment_subject',
+                'equipment_inventories.capacity as equipment_capacity',
+                'equipment_inventories.condition as equipment_condition',
+                'equipment_inventories.slug_name as equipment_slug_name',
+                'equipment_inventories.description as equipment_description'
+            )
+                ->leftJoin('crane_inventories', 'inventories.id', '=', 'crane_inventories.inventory_id')
+                ->leftJoin('part_inventories', 'inventories.id', '=', 'part_inventories.inventory_id')
+                ->leftJoin('equipment_inventories', 'inventories.id', '=', 'equipment_inventories.inventory_id')
+                ->where(function ($query) {
+                    $query->where('inventories.is_available', true)
+                        ->where('inventories.is_public', true)
+                        ->orWhere('inventories.updated_at', '>=', now()->subDays(30));
                 });
-            });
-        }
 
-        if ($this->selectedModel) {
-            $query->whereHas('craneinventory', function ($query) {
-                $query->where('model', $this->selectedModel);
-            });
-        }
-
-        if ($this->selectedYear) {
-            $query->where(function ($query) {
-                $query->whereHas('craneinventory', function ($query) {
-                    $query->where('year', $this->selectedYear);
-                })->orWhereHas('partinventory', function ($query) {
-                    $query->where('year', $this->selectedYear);
-                })->orWhereHas('equipmentInventory', function ($query) {
-                    $query->where('year', $this->selectedYear);
+            if ($this->selectedMake) {
+                $query->where(function ($q) {
+                    $q->where('crane_inventories.make', $this->selectedMake)
+                        ->orWhere('part_inventories.make', $this->selectedMake)
+                        ->orWhere('equipment_inventories.make', $this->selectedMake);
                 });
-            });
-        }
+            }
 
-        $this->inventories = $query->get();
+            if ($this->selectedModel) {
+                $query->where('crane_inventories.model', $this->selectedModel);
+            }
+
+            if ($this->selectedYear) {
+                $query->where(function ($q) {
+                    $q->where('crane_inventories.year', $this->selectedYear)
+                        ->orWhere('part_inventories.year', $this->selectedYear)
+                        ->orWhere('equipment_inventories.year', $this->selectedYear);
+                });
+            }
+
+            return $query->with('images')
+                ->orderBy('inventories.is_featured', 'desc')
+                ->orderBy('crane_inventories.readabletype', 'asc') // Or your preferred secondary sort
+                ->get();
+        });
+
+        $this->totalResults = $this->inventories->count();
     }
 
     public function mount()
     {
-        $this->inventories = Inventory::where(function ($query) {
-            $query->where('is_available', true)
-                ->where('is_public', true)
-                ->orWhere('updated_at', '>=', now()->subDays(30));
-        })
-            ->with('craneinventory', 'partinventory', 'images', 'equipmentinventory')
-            ->get();
+        $this->loadFilterOptions(); // New method to load filter options
+        $this->inventories = $this->performSearch();
+        $this->totalResults = $this->inventories->count();
 
-        $craneMakes = $this->inventories->pluck('craneInventory.make')->filter()->sort();
-        $equipmentMakes = $this->inventories->pluck('equipmentInventory.make')->filter()->sort();
-        $partMakes = $this->inventories->pluck('partInventory.make')->filter()->sort();
-        $craneYears = $this->inventories->pluck('craneInventory.year')->filter()->sort()->reverse();
-        $equipmentYears = $this->inventories->pluck('equipmentInventory.year')->filter()->sort()->reverse();
-        $partYears = $this->inventories->pluck('partInventory.year')->filter()->sort()->reverse();
-        $craneModels = $this->inventories->pluck('craneInventory.model')->filter()->unique()->sort();
-
-        $this->makes = $craneMakes->concat($partMakes)->concat($equipmentMakes)->unique();
-        $this->years = $craneYears->concat($partYears)->concat($equipmentYears)->unique();
-        $this->models = $craneModels;
-
-        $this->filterInventories();
     }
+
+    private function loadFilterOptions()
+    {
+        $cacheKey = 'filter_options';
+        $cacheTime = now()->addDay(); // Cache for 1 day
+
+        $filterOptions = Cache::remember($cacheKey, $cacheTime, function () {
+            $makes = DB::table('crane_inventories')->select('make')->distinct()->pluck('make')
+                ->concat(DB::table('part_inventories')->select('make')->distinct()->pluck('make'))
+                ->concat(DB::table('equipment_inventories')->select('make')->distinct()->pluck('make'))
+                ->unique()->sort();
+
+            $models = DB::table('crane_inventories')->select('model')->distinct()->pluck('model')->unique()->sort();
+
+            $years = DB::table('crane_inventories')->select('year')->distinct()->pluck('year')
+                ->concat(DB::table('part_inventories')->select('year')->distinct()->pluck('year'))
+                ->concat(DB::table('equipment_inventories')->select('year')->distinct()->pluck('year'))
+                ->unique()->sort()->reverse();
+
+            return compact('makes', 'models', 'years');
+        });
+
+        $this->makes = $filterOptions['makes'];
+        $this->models = $filterOptions['models'];
+        $this->years = $filterOptions['years'];
+    }
+
+
+
+
 
     public function render()
     {

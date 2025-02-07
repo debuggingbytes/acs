@@ -10,6 +10,7 @@ use App\Livewire\Dashboard\AdminIndex;
 use App\Livewire\Dashboard\ModifyInventory;
 use App\Livewire\Profile\UserProfile;
 use App\Livewire\Bbcode;
+use App\Livewire\Quotes\Send;
 use App\Livewire\ShowInventory;
 use Illuminate\Support\Facades\Route;
 use Intervention\Image\ImageManager;
@@ -58,7 +59,7 @@ Route::get('/finance', function () {
 })->name('finance');
 
 // DASHBOARD  -  Middleware to be updated to include user / admin variances
-Route::middleware('auth:sanctum','account.auth')->group(function () {
+Route::middleware(['auth:sanctum', 'account.auth'])->group(function () {
     Route::prefix('/dashboard')->group(function () {
         Route::get('/', AdminIndex::class)->name('admin.dashboard');
         Route::get('/bbcode', Bbcode::class)->name('bbcode');
@@ -71,6 +72,8 @@ Route::middleware('auth:sanctum','account.auth')->group(function () {
         Route::get('/inventory/{id}/edit', ModifyInventory::class)->name('edit.inventory');
 
         // User management
+        // Quote Management
+        Route::get('/quotes', Send::class)->name('send.quote');
     });
     // Route::get('/test', function(){
     //     throw new \Exception('This is a test');
@@ -85,6 +88,6 @@ Route::get('/login', function () {
 Route::post('/login', [UserController::class, 'loginUser'])->name('login.user');
 Route::any('/logout', [UserController::class, 'logoutUser'])->name('logout.user');
 
-Route::get('component', function(){
+Route::get('component', function () {
     return view('components.inventory-card');
 });
