@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Url;
 use App\Models\Inventory;
 use Illuminate\Support\Facades\DB;  // Import DB
-use Illuminate\Support\Facades\Cache; // Import Cache
+use Illuminate\Support\Facades\Cache;  // Import DB
 use Illuminate\Support\Str;
 
 class ViewLiveInventory extends Component
@@ -36,7 +36,7 @@ class ViewLiveInventory extends Component
     private function performSearch()
     {
         $cacheKey = 'inventory_search:'.md5(serialize([$this->query, $this->selectedMake, $this->selectedModel, $this->selectedYear]));
-        $cacheTime = now()->addHours(20); // 20-hour cache
+        $cacheTime = now()->addHours(20);
 
         return Cache::remember($cacheKey, $cacheTime, function () {
             $keywords = array_map(function ($keyword) {
@@ -45,26 +45,18 @@ class ViewLiveInventory extends Component
 
             $query = Inventory::select(
                 'inventories.*',
-                'crane_inventories.readabletype as crane_readabletype',
-                'crane_inventories.year as crane_year',
+                'crane_inventories.year as crane_year',  // Specific alias for crane year
                 'crane_inventories.subject as crane_subject',
                 'crane_inventories.capacity as crane_capacity',
                 'crane_inventories.condition as crane_condition',
-                'crane_inventories.slug_name as crane_slug_name',
                 'crane_inventories.description as crane_description',
-                'part_inventories.readabletype as part_readabletype',
-                'part_inventories.year as part_year',
+                'part_inventories.year as part_year',      // Specific alias for part year
                 'part_inventories.subject as part_subject',
-                'part_inventories.capacity as part_capacity',
                 'part_inventories.condition as part_condition',
-                'part_inventories.slug_name as part_slug_name',
                 'part_inventories.description as part_description',
-                'equipment_inventories.readabletype as equipment_readabletype',
-                'equipment_inventories.year as equipment_year',
+                'equipment_inventories.year as equipment_year', // Specific alias for equipment year
                 'equipment_inventories.subject as equipment_subject',
-                'equipment_inventories.capacity as equipment_capacity',
                 'equipment_inventories.condition as equipment_condition',
-                'equipment_inventories.slug_name as equipment_slug_name',
                 'equipment_inventories.description as equipment_description'
             )
                 ->leftJoin('crane_inventories', 'inventories.id', '=', 'crane_inventories.inventory_id')
@@ -82,16 +74,16 @@ class ViewLiveInventory extends Component
                         $subQuery->orWhere('crane_inventories.make', 'LIKE', "%{$keyword}%")
                             ->orWhere('crane_inventories.model', 'LIKE', "%{$keyword}%")
                             ->orWhere('crane_inventories.description', 'LIKE', "%{$keyword}%")
-                            ->orWhere('crane_inventories.year', 'LIKE', "%{$keyword}%")
+                            ->orWhere('crane_inventories.year', 'LIKE', "%{$keyword}%") // Use crane_year
                             ->orWhere('crane_inventories.condition', 'LIKE', "%{$keyword}%")
                             ->orWhere('crane_inventories.capacity', 'LIKE', "%{$keyword}%")
                             ->orWhere('part_inventories.make', 'LIKE', "%{$keyword}%")
                             ->orWhere('part_inventories.description', 'LIKE', "%{$keyword}%")
-                            ->orWhere('part_inventories.year', 'LIKE', "%{$keyword}%")
+                            ->orWhere('part_inventories.year', 'LIKE', "%{$keyword}%")     // Use part_year
                             ->orWhere('part_inventories.condition', 'LIKE', "%{$keyword}%")
                             ->orWhere('equipment_inventories.make', 'LIKE', "%{$keyword}%")
                             ->orWhere('equipment_inventories.description', 'LIKE', "%{$keyword}%")
-                            ->orWhere('equipment_inventories.year', 'LIKE', "%{$keyword}%")
+                            ->orWhere('equipment_inventories.year', 'LIKE', "%{$keyword}%") // Use equipment_year
                             ->orWhere('equipment_inventories.condition', 'LIKE', "%{$keyword}%");
                     }
                 });
@@ -111,15 +103,15 @@ class ViewLiveInventory extends Component
 
             if ($this->selectedYear) {
                 $query->where(function ($q) {
-                    $q->where('crane_inventories.year', $this->selectedYear)
-                        ->orWhere('part_inventories.year', $this->selectedYear)
-                        ->orWhere('equipment_inventories.year', $this->selectedYear);
+                    $q->where('crane_inventories.year', $this->selectedYear)    // Use crane_year
+                        ->orWhere('part_inventories.year', $this->selectedYear)  // Use part_year
+                        ->orWhere('equipment_inventories.year', $this->selectedYear); // Use equipment_year
                 });
             }
 
-            return $query->with('images')
-                ->orderBy('inventories.is_featured', 'desc')
-                ->orderBy('crane_inventories.readabletype', 'asc') // Or your preferred secondary sort
+            return $query->with(['images', 'craneInventory', 'partInventory', 'equipmentInventory'])
+                ->orderBy('inventories.is_featured', 'desc')  // Sort by is_featured DESC first
+                ->orderBy(DB::raw("CASE WHEN inventories.inventoryable_type = 'App\Models\CraneInventory' THEN 1 ELSE 0 END"), 'desc') // Then by CraneInventory type
                 ->get();
         });
     }
@@ -144,26 +136,18 @@ class ViewLiveInventory extends Component
         $this->inventories = Cache::remember($cacheKey, $cacheTime, function () {
             $query = Inventory::select(
                 'inventories.*',
-                'crane_inventories.readabletype as crane_readabletype',
                 'crane_inventories.year as crane_year',
                 'crane_inventories.subject as crane_subject',
                 'crane_inventories.capacity as crane_capacity',
                 'crane_inventories.condition as crane_condition',
-                'crane_inventories.slug_name as crane_slug_name',
                 'crane_inventories.description as crane_description',
-                'part_inventories.readabletype as part_readabletype',
                 'part_inventories.year as part_year',
                 'part_inventories.subject as part_subject',
-                'part_inventories.capacity as part_capacity',
                 'part_inventories.condition as part_condition',
-                'part_inventories.slug_name as part_slug_name',
                 'part_inventories.description as part_description',
-                'equipment_inventories.readabletype as equipment_readabletype',
                 'equipment_inventories.year as equipment_year',
                 'equipment_inventories.subject as equipment_subject',
-                'equipment_inventories.capacity as equipment_capacity',
                 'equipment_inventories.condition as equipment_condition',
-                'equipment_inventories.slug_name as equipment_slug_name',
                 'equipment_inventories.description as equipment_description'
             )
                 ->leftJoin('crane_inventories', 'inventories.id', '=', 'crane_inventories.inventory_id')
@@ -189,15 +173,15 @@ class ViewLiveInventory extends Component
 
             if ($this->selectedYear) {
                 $query->where(function ($q) {
-                    $q->where('crane_inventories.year', $this->selectedYear)
-                        ->orWhere('part_inventories.year', $this->selectedYear)
-                        ->orWhere('equipment_inventories.year', $this->selectedYear);
+                    $q->where('crane_inventories.year', $this->selectedYear) // Use crane_year
+                        ->orWhere('part_inventories.year', $this->selectedYear)  // Use part_year
+                        ->orWhere('equipment_inventories.year', $this->selectedYear); // Use equipment_year
                 });
             }
 
-            return $query->with('images')
-                ->orderBy('inventories.is_featured', 'desc')
-                ->orderBy('crane_inventories.readabletype', 'asc') // Or your preferred secondary sort
+            return $query->with(['images', 'craneInventory', 'partInventory', 'equipmentInventory'])
+                ->orderBy('inventories.is_featured', 'desc')   // Sort by is_featured DESC first
+                ->orderBy(DB::raw("CASE WHEN inventories.inventoryable_type = 'App\Models\CraneInventory' THEN 1 ELSE 0 END"), 'desc') // Then by CraneInventory type
                 ->get();
         });
 
@@ -214,28 +198,17 @@ class ViewLiveInventory extends Component
 
     private function loadFilterOptions()
     {
-        $cacheKey = 'filter_options';
-        $cacheTime = now()->addDay(); // Cache for 1 day
+        $this->makes = DB::table('crane_inventories')->select('make')->distinct()->pluck('make')
+            ->concat(DB::table('part_inventories')->select('make')->distinct()->pluck('make'))
+            ->concat(DB::table('equipment_inventories')->select('make')->distinct()->pluck('make'))
+            ->unique()->sort();
 
-        $filterOptions = Cache::remember($cacheKey, $cacheTime, function () {
-            $makes = DB::table('crane_inventories')->select('make')->distinct()->pluck('make')
-                ->concat(DB::table('part_inventories')->select('make')->distinct()->pluck('make'))
-                ->concat(DB::table('equipment_inventories')->select('make')->distinct()->pluck('make'))
-                ->unique()->sort();
+        $this->models = DB::table('crane_inventories')->select('model')->distinct()->pluck('model')->unique()->sort();
 
-            $models = DB::table('crane_inventories')->select('model')->distinct()->pluck('model')->unique()->sort();
-
-            $years = DB::table('crane_inventories')->select('year')->distinct()->pluck('year')
-                ->concat(DB::table('part_inventories')->select('year')->distinct()->pluck('year'))
-                ->concat(DB::table('equipment_inventories')->select('year')->distinct()->pluck('year'))
-                ->unique()->sort()->reverse();
-
-            return compact('makes', 'models', 'years');
-        });
-
-        $this->makes = $filterOptions['makes'];
-        $this->models = $filterOptions['models'];
-        $this->years = $filterOptions['years'];
+        $this->years = DB::table('crane_inventories')->select('year')->distinct()->pluck('year')
+            ->concat(DB::table('part_inventories')->select('year')->distinct()->pluck('year'))
+            ->concat(DB::table('equipment_inventories')->select('year')->distinct()->pluck('year'))
+            ->unique()->sort()->reverse();
     }
 
 

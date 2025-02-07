@@ -12,7 +12,7 @@
                     </div>
                     <div class="grid grid-flow-col auto-cols-max gap-2 p-4">
                         @php
-                            $keywords = explode(" ", $query);
+    $keywords = explode(" ", $query);
                           @endphp
                         @foreach ($keywords as $keyword)
                             <div class="inline-block whitespace-nowrap bg-cyan-600 text-center text-white px-4 py-1 rounded-full">
@@ -46,37 +46,35 @@
         </div>
     </div>
     <div class="grid grid-flow-rows grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 grid-rows-max gap-5 p-2">
-        @foreach ($inventories->sortByDesc(function ($inventory) {
-                return [$inventory->is_featured ? 1 : 0, $inventory->inventoryable_type == "App\Models\CraneInventory" ? 1 : 0];
-            }) as $inventory)
-                    @if($inventory->is_public)
-                        @if ($inventory->inventoryable_type == "App\Models\CraneInventory")
-                            <x-inventory-card :loop="$loop->iteration" :category="$inventory->craneInventory->readabletype"
-                                :year="$inventory->craneInventory->year" :subject="$inventory->craneInventory->subject"
-                                :capacity="$inventory->craneInventory->capacity" :condition="$inventory->craneInventory->condition"
-                                :images="$inventory->images" :id="$inventory->id" :slug="$inventory->craneInventory->slugName" route="crane"
-                                :thumbnail="$inventory->thumbnail" :details="$inventory->craneInventory->description"
-                                :featured="$inventory->is_featured" :available="$inventory->is_available"
-                                :views="count($inventory->uniqueViews)" :price="$inventory->cost" />
-                        @elseif ($inventory->inventoryable_type == "App\Models\PartInventory")
-                            <x-inventory-card :loop="$loop->iteration" :category="$inventory->partInventory->readabletype"
-                                :year="$inventory->partInventory->year" :subject="$inventory->partInventory->subject"
-                                :capacity="$inventory->partInventory->capacity" :condition="$inventory->partInventory->condition"
-                                :images="$inventory->images" :id="$inventory->id" :slug="$inventory->partInventory->slugName" route="part"
-                                :thumbnail="$inventory->thumbnail" :featured="$inventory->is_featured" :available="$inventory->is_available"
-                                :details="$inventory->partInventory->description" :views="count($inventory->uniqueViews)"
-                                :price="$inventory->cost" />
-                        @elseif ($inventory->inventoryable_type == "App\Models\EquipmentInventory")
-                            <x-inventory-card :loop="$loop->iteration" :category="$inventory->equipmentInventory->readabletype"
-                                :year="$inventory->equipmentInventory->year" :subject="$inventory->equipmentInventory->subject"
-                                :capacity="$inventory->equipmentInventory->capacity" :condition="$inventory->equipmentInventory->condition"
-                                :images="$inventory->images" :id="$inventory->id" :slug="$inventory->equipmentInventory->slugName"
-                                route="equipment" :thumbnail="$inventory->thumbnail" :featured="$inventory->is_featured"
-                                :available="$inventory->is_available" :details="$inventory->equipmentInventory->description"
-                                :views="count($inventory->uniqueViews)" :price="$inventory->cost" />
-                        @endif
+            @foreach ($inventories as $inventory)  {{-- Just loop, no sorting here --}}
+                @if($inventory->is_public)
+                    @if ($inventory->inventoryable_type == "App\Models\CraneInventory")
+                        <x-inventory-card :loop="$loop->iteration" :category="$inventory->craneInventory->readabletype"
+                            :year="$inventory->craneInventory->year" :subject="$inventory->craneInventory->subject"
+                            :capacity="$inventory->craneInventory->capacity" :condition="$inventory->craneInventory->condition"
+                            :images="$inventory->images" :id="$inventory->id" :slug="$inventory->craneInventory->slugName" route="crane"
+                            :thumbnail="$inventory->thumbnail" :details="$inventory->craneInventory->description"
+                            :featured="$inventory->is_featured" :available="$inventory->is_available"
+                            :views="count($inventory->uniqueViews)" :price="$inventory->cost" />
+                    @elseif ($inventory->inventoryable_type == "App\Models\PartInventory")
+                        <x-inventory-card :loop="$loop->iteration" :category="$inventory->partInventory->readabletype"
+                            :year="$inventory->partInventory->year" :subject="$inventory->partInventory->subject"
+                            :capacity="$inventory->partInventory->capacity" :condition="$inventory->partInventory->condition"
+                            :images="$inventory->images" :id="$inventory->id" :slug="$inventory->partInventory->slugName" route="part"
+                            :thumbnail="$inventory->thumbnail" :details="$inventory->partInventory->description"
+                            :featured="$inventory->is_featured" :available="$inventory->is_available"
+                            :views="count($inventory->uniqueViews)" :price="$inventory->cost" />
+                    @elseif ($inventory->inventoryable_type == "App\Models\EquipmentInventory")
+                        <x-inventory-card :loop="$loop->iteration" :category="$inventory->equipmentInventory->readabletype"
+                            :year="$inventory->equipmentInventory->year" :subject="$inventory->equipmentInventory->subject"
+                            :capacity="$inventory->equipmentInventory->capacity" :condition="$inventory->equipmentInventory->condition"
+                            :images="$inventory->images" :id="$inventory->id" :slug="$inventory->equipmentInventory->slugName"
+                            route="equipment" :thumbnail="$inventory->thumbnail" :details="$inventory->equipmentInventory->description"
+                            :featured="$inventory->is_featured" :available="$inventory->is_available"
+                            :views="count($inventory->uniqueViews)" :price="$inventory->cost" />
                     @endif
-        @endforeach
+                @endif
+            @endforeach
     </div>
 
 </div>
