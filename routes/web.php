@@ -13,9 +13,6 @@ use App\Livewire\Bbcode;
 use App\Livewire\Quotes\Send;
 use App\Livewire\ShowInventory;
 use Illuminate\Support\Facades\Route;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Imagick\Driver;
-use Illuminate\Support\Facades\File;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +86,3 @@ Route::get('/login', function () {
 Route::post('/login', [UserController::class, 'loginUser'])->name('login.user');
 Route::post('/logout', [UserController::class, 'logoutUser'])->name('logout.user');
 
-Route::get('component', function () {
-    return view('components.inventory-card');
-});
