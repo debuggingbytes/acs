@@ -73,7 +73,8 @@ Route::middleware(['auth:sanctum', 'account.auth'])->group(function () {
 
         // User management
         // Quote Management
-        Route::get('/quotes', Send::class)->name('send.quote');
+        Route::get('/quotes', Send::class)->name('quotes');
+        Route::get('/quotes/create/{id}/', Send::class)->name('quote.create');
     });
     // Route::get('/test', function(){
     //     throw new \Exception('This is a test');
@@ -86,7 +87,7 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::post('/login', [UserController::class, 'loginUser'])->name('login.user');
-Route::any('/logout', [UserController::class, 'logoutUser'])->name('logout.user');
+Route::post('/logout', [UserController::class, 'logoutUser'])->name('logout.user');
 
 Route::get('component', function () {
     return view('components.inventory-card');
