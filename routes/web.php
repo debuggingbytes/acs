@@ -33,9 +33,7 @@ use Illuminate\Support\Facades\Storage;
 
 
 // Home Route
-Route::get('/', function ($secret = null) {
-    return view('home');
-})->name('home');
+Route::view('/', 'home')->name('home');
 
 
 // All routes based around inventory

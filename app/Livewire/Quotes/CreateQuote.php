@@ -50,7 +50,7 @@ class CreateQuote extends Component
     }
 
     // save function
-    public function submit()
+    public function generateQuote()
     {
         $this->validate([
             'clientName' => 'required',
@@ -67,7 +67,6 @@ class CreateQuote extends Component
         ]);
 
         try {
-            DB::beginTransaction();
 
             $quote = $this->saveQuote();
 
@@ -75,11 +74,8 @@ class CreateQuote extends Component
                 throw new \Exception('Failed to save quote.');
             }
 
-            $pdf = $this->generatePDF($quote);
+            $this->generatePDF($quote);
 
-            if ($pdf) {
-                throw new \Exception('Failed to generate PDF. '.$pdf);
-            }
 
             DB::commit();
             session()->flash('status', [
@@ -106,6 +102,8 @@ class CreateQuote extends Component
             ]);
             $this->dispatch('refresh-status');
         }
+
+        return redirect()->route('quotes.home');
 
     }
     private function generatePDF(Quote $quote)
@@ -139,35 +137,53 @@ class CreateQuote extends Component
     }
     private function saveQuote()
     {
+        DB::beginTransaction();
 
-        $year = date('Y'); // Get the current year
-        // Find the last quote number created in the current year.  This is safer than relying on ID.
-        $lastQuote = Quote::whereYear('created_at', $year)
-            ->orderBy('quote_number', 'desc')
-            ->lockForUpdate() // Lock the row to prevent race conditions
-            ->first();
+        try {
+            $year = date('Y');
 
-        $nextNumber = $lastQuote ? (int) substr($lastQuote->quote_number, 9) + 1 : 1;
-        $paddedNumber = str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
-        $quoteNumber = "ACS-$year-$paddedNumber";
+            // Use a database-level lock to prevent race conditions
+            DB::select('SELECT GET_LOCK("quote_creation_'.$year.'", 10)'); // 10-second timeout
 
-        $quote = Quote::create([
-            'quote_number' => $quoteNumber,
-            'client_name' => $this->clientName,
-            'client_company' => $this->clientCompany,
-            'client_email' => $this->clientEmail,
-            'client_phone' => $this->clientPhone,
-            'client_address' => $this->clientAddress,
-            'list_price' => $this->listPrice,
-            'line_item' => $this->lineItem,
-            'shipping_price' => $this->shippingPrice,
-            'currency' => $this->currency,
-            'quantity' => $this->quantity,
-            'price' => $this->price,
-            'inventory_id' => $this->inventory->id,
-            'todays_date' => $this->getTodaysDateProperty(),
-        ]);
-        return $quote;
+            // Now that we have the lock, check for existing quotes
+            $lastQuote = Quote::whereYear('created_at', $year)
+                ->orderBy('quote_number', 'desc')
+                ->first();
+
+            if (! $lastQuote) {
+                $quoteNumber = "ACS-$year-00001";
+            } else {
+                $nextNumber = (int) substr($lastQuote->quote_number, 9) + 1;
+                $paddedNumber = str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+                $quoteNumber = "ACS-$year-$paddedNumber";
+            }
+
+            $quote = Quote::create([ // No need for createOrFirst here
+                'quote_number' => $quoteNumber,
+                'client_name' => $this->clientName,
+                'client_company' => $this->clientCompany,
+                'client_email' => $this->clientEmail,
+                'client_phone' => $this->clientPhone,
+                'client_address' => $this->clientAddress,
+                'list_price' => $this->listPrice,
+                'line_item' => $this->lineItem,
+                'shipping_price' => $this->shippingPrice,
+                'currency' => $this->currency,
+                'quantity' => $this->quantity,
+                'price' => $this->price,
+                'inventory_id' => $this->inventory->id,
+                'todays_date' => $this->getTodaysDateProperty(),
+            ]);
+
+            DB::commit();
+            DB::select('SELECT RELEASE_LOCK("quote_creation_'.$year.'")'); // Release the lock
+            return $quote;
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            DB::select('SELECT RELEASE_LOCK("quote_creation_'.$year.'")'); // Release lock even on failure
+            throw $e; // Re-throw the exception so your error handling works
+        }
     }
 
     public function mount(Inventory $inventory, $id = null)

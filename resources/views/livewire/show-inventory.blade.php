@@ -108,8 +108,12 @@
                                     {{ $inventory->cost }}
                                 </div>
                                 <div class="truncate w-1/12 text-center">
-                                    <a href="{{route('quote.create', ['id' => $inventory->id])}}" x-data
-                                        @click="$event.stopPropagation()"><i class="fa-solid fa-book-open"></i></a>
+                                    @if($inventory->craneInventory)
+                                        <a href="{{route('quote.create', ['id' => $inventory->id])}}" x-data
+                                            @click="$event.stopPropagation()"><i class="fa-solid fa-book-open"></i></a>
+                                    @else
+                                        <i class="fas fa-times-circle text-red-500"></i>
+                                    @endif
                                 </div>
                             </div>
                         </div>

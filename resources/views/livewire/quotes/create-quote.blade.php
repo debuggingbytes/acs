@@ -41,7 +41,7 @@
     @endif
 
     <div class="container mx-auto p-4">
-    <form wire:submit.prevent="submit" class="space-y-4">
+    <form class="space-y-4">
 
         <div class="flex flex-col gap-4">  {{-- Responsive grid --}}
             <div>
@@ -79,7 +79,7 @@
         <div>
             <label for="clientAddress" class="block text-sm font-medium text-gray-700">Client Address</label>
             <input id="clientAddress" wire:model.live="clientAddress" required
-                      class="mt-1 block p-2 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 sm:text-sm"
+                      class="mt-1 block p-2 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 sm:text-sm">
             @error('clientAddress') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
 
@@ -126,12 +126,12 @@
                 </div>
         </div>
 
-        <button wire:click='submit'type="submit"
-                class="w-full rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
-            Submit
+        <button wire:click.prevent='generateQuote' wire:loading.attr="disabled"
+                class="w-full rounded-md border border-transparent bg-green-600 py-2 px-4 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+            Generate Quote
         </button>
 
-        <div wire:loading wire:target="submit" class="flex w-3/4 mx-auto items-center justify-center bg-blue-500 p-2 rounded-md shadow-md my-5">
+        <div wire:loading wire:target="generateQuote" class="flex w-3/4 mx-auto items-center justify-center bg-blue-500 p-2 rounded-md shadow-md my-5">
             <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
             <span class="ml-4 text-white text-lg">Processing...</span>
         </div>
@@ -290,11 +290,10 @@
 
         </div>
         @if ($inventory->craneInventory)
-        <div class="flex gap-2">
-            <span class="font-bold w-1/3 bg-gray-400 p-2">Capacity:</span>
-            <span class="p-2">{{ $inventory->craneInventory->capacity ?? $inventory->equipmentInventory->capacity ?? $inventory->partsInventory->capacity ?? "ERROR" }}</span>
-
-        </div>
+            <div class="flex gap-2">
+                <span class="font-bold w-1/3 bg-gray-400 p-2">Capacity:</span>
+                <span class="p-2">{{ $inventory->craneInventory->capacity ?? $inventory->equipmentInventory->capacity ?? $inventory->partsInventory->capacity ?? "ERROR" }}</span>
+            </div>
             <div class="flex gap-2">
                 <span class="font-bold w-1/3 bg-gray-400 p-2">Boom:</span>
                 <span class="p-2">{{ $inventory->craneInventory->boom ?? "ERROR" }}</span>
