@@ -81,14 +81,16 @@
                     <div class="truncate text-center">{{ $quote->client_email }}</div>
                     <div class="truncate text-center">{{ $quote->client_phone }}</div>
                     <div class="truncate text-center">
-                        <a href="" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-eye"></i></a>
-                        <a href="" class="text-green-500 hover:text-green-700"><i class="fa-solid fa-pen-to-square"></i></a>
-                        <form action="" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" onclick="return confirm('Are you sure you want to delete this quote?')"
+                        <div class="truncate w-1/12 text-center">
+                            <button wire:click='streamPdf({{$quote->id}})' class="text-blue-500 hover:text-blue-700"><i
+                                    class="fas fa-download"></i></button>
+                        </div>
+
+                        <div class="truncate w-1/12 text-center">
+                            <button wire:click='deleteQuote({{ $quote->id }})'
+                                wire:confirm="Are you sure you want to delete this quote?"
                                 class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash-can"></i></button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>

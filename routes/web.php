@@ -17,8 +17,8 @@ use App\Livewire\System\Maintenance\ManageMaintenance;
 use App\Livewire\Quotes\ShowQuotes;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Barryvdh\DomPDF\Facade\Pdf;
-
+use App\Models\System\Quote;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -101,16 +101,25 @@ Route::get('/login', function () {
 Route::post('/login', [UserController::class, 'loginUser'])->name('login.user');
 Route::post('/logout', [UserController::class, 'logoutUser'])->name('logout.user');
 
-Route::get('/test', function () {
 
-    PDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'allowedRemoteHosts' => ['placeholder.com/']]);
+Route::get('/download-quote/{quote}', function (Quote $quote) {
+    if (! $quote->pdf_path) {
+        abort(404, 'PDF not found.');
+    }
 
-    $pdf = PDF::loadView('pdf.test');
+    $path = Storage::disk('public')->path($quote->pdf_path);
 
-    return new StreamedResponse(function () use ($pdf) {
-        echo $pdf->output();
+    if (! file_exists($path)) {
+        abort(404, 'PDF file not found on disk.');
+    }
+
+    $response = new StreamedResponse(function () use ($path) {
+        readfile($path);
     }, 200, [
         'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="test.pdf"', // Use 'inline' for viewing in browser
+        'Content-Disposition' => 'attachment; filename="'.basename($path).'"',
     ]);
-});
+
+    return $response;
+})->name('download.quote');
+

@@ -14,7 +14,7 @@
     </x-dashboard.block>
     <x-dashboard.block blockTitle='Business Tools'>
         <x-dashboard.link linkRoute='quotes.home' linkName='Show Quotes' />
-        <x-dashboard.link linkRoute='billing.home' linkName='Billing' />
+        {{-- <x-dashboard.link linkRoute='billing.home' linkName='Billing' /> --}}
         {{-- <x-dashboard.block.link route='quotes.view' linkText='View Quote' /> --}}
     </x-dashboard.block>
     <x-dashboard.block blockTitle="Website Management">

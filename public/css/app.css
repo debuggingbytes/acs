@@ -930,6 +930,9 @@ video {
 .w-3 {
   width: 0.75rem;
 }
+.w-16 {
+  width: 4rem;
+}
 .min-w-96 {
   min-width: 24rem;
 }
@@ -1443,8 +1446,15 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
 }
+.bg-gray-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(31 41 55 / var(--tw-bg-opacity, 1));
+}
 .bg-opacity-80 {
   --tw-bg-opacity: 0.8;
+}
+.bg-opacity-75 {
+  --tw-bg-opacity: 0.75;
 }
 .bg-gradient-to-b {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));

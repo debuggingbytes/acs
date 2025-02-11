@@ -315,7 +315,7 @@
         </table>
 
         <div class="text-right mt-5" style="display: flex; width: 100%; justify-content: flex-end; text-align: right;">
-            <a href="http://www.albertacraneservice.com" class="web-button no-print" style="cursor: pointer; margin-top: 0;">View on Web</a>
+            <a href="{{ route('download.quote', ['quote' => $quote->id]) }}" class="web-button no-print" style="cursor: pointer; margin-top: 0;">View on Web</a>
         </div>
 
         <table class="images-container" style="margin-top: 0.375in;">

@@ -130,6 +130,11 @@
                 class="w-full rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
             Submit
         </button>
+
+        <div wire:loading wire:target="submit" class="flex w-3/4 mx-auto items-center justify-center bg-blue-500 p-2 rounded-md shadow-md my-5">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+            <span class="ml-4 text-white text-lg">Processing...</span>
+        </div>
     </form>
 </div>
 <span class="text-2xl">PDF Preview</span>
