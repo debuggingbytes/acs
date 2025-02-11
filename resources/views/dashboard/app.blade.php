@@ -39,75 +39,7 @@
                 </span>
             </div>
             <div class='flex gap-2 pb-10 w-full'>
-                <div class="hidden lg:block lg:w-1/4 space-y-5">
-                    <div class="bg-slate-100 shadow-md rounded-md">
-                        <h3 class="text-white bg-cyan-700 rounded-tl-md rounded-tr-md p-2 hover:bg-cyan-800">
-                            <strong>Menu</strong>
-                        </h3>
-                        <ul class="space-y-2 p-4">
-                            <a href='{{ route('admin.dashboard') }}' wire:navigate>
-                                <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                    Dashboard
-                                </li>
-                            </a>
-                            <a href='{{ route('profile.user') }}' wire:navigate>
-                                <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                    My Account
-                                </li>
-                            </a>
-                            <a href='{{route('logout.user')}}' wire:navigate>
-                                <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                    Logout
-                                </li>
-                            </a>
-                        </ul>
-                    </div>
-                    <div class="bg-slate-100 shadow-md rounded-md">
-                        <h3 class="text-white bg-cyan-700 rounded-tl-md rounded-tr-md p-2 hover:bg-cyan-800">
-                            <strong>Inventory</strong>
-                        </h3>
-                        <ul class="space-y-2 p-4">
-                            <a href='{{ route('add.crane.inventory') }}' wire:navigate>
-                                <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                    Add New Crane
-                                </li>
-                            </a>
-                            <a href='{{ route('show.inventory') }}' wire:navigate>
-                                <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                    Show Inventory
-                                </li>
-                            </a>
-                            <a href='{{ route('add.part.inventory') }}' wire:navigate>
-                                <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                    Add Part
-                                </li>
-                            </a>
-                            <a href='{{ route('add.equipment.inventory') }}' wire:navigate>
-                                <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                    Add Equipment
-                                </li>
-                            </a>
-
-                            {{-- <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                Add Crane Categories
-                            </li>
-                            <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                Add Part Categories
-                            </li> --}}
-                        </ul>
-                    </div>
-                    <div class="bg-slate-100 shadow-md rounded-md">
-                        <h3 class="text-white bg-cyan-700 rounded-tl-md rounded-tr-md p-2 hover:bg-cyan-800">
-                            <strong>User Management</strong>
-                        </h3>
-                        <ul class="space-y-2 p-4">
-
-                            <li class="hover:text-white hover:bg-cyan-700 rounded-md p-2 cursor-pointer">
-                                Coming Soon
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <x-dashboard.sidebar />
                 <div class="w-full block bg-slate-100 shadow-md rounded-md lg:h-fit xl:w-3/4">
                     {{ $slot }}
                 </div>
@@ -121,6 +53,8 @@
     <div class="block p-2 bg-slate-200">&nbsp;</div>
     <!-- end main content -->
     <script src="{{ asset('js/scripts.js') }}"></script>
+    <wireui:scripts />
+
     @livewireScripts
     @yield('scripts')
 </body>

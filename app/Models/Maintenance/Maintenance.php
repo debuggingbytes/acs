@@ -9,8 +9,8 @@ class Maintenance extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'start_time',
-        'end_time',
+        'start_date',
+        'end_date',
         'is_completed',
         'is_active',
         'title',

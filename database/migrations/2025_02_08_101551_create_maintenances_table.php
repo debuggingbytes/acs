@@ -16,10 +16,10 @@ return new class extends Migration
             $table->timestamps();
             $table->dateTime('start_date');
             $table->dateTime('end_date');
-            $table->boolean('is_completed')->default(false);
-            $table->boolean('is_active')->default(true);
-            $table->string('title');
-            $table->text('description');
+            $table->boolean('is_completed')->default(false)->nullable();
+            $table->boolean('is_active')->default(true)->nullable();
+            $table->string('title')->nullable();
+            $table->text('description')->nullable();
         });
     }
 

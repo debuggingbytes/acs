@@ -10,7 +10,7 @@ class Image extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['image_order','inventory_id', 'image_path'];
+    protected $fillable = ['image_order', 'inventory_id', 'image_path'];
 
     /**
      * Get the Inventory that owns the Image
@@ -22,8 +22,9 @@ class Image extends Model
         return $this->belongsTo(Inventory::class);
     }
 
-    public function getImagePathAttribute($value){
-        if(!Str::startsWith($value, '/')){
+    public function getImagePathAttribute($value)
+    {
+        if (! Str::startsWith($value, '/')) {
             return '/'.$value;
         }
         return $value;

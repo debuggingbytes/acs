@@ -47,6 +47,8 @@ class Inventory extends Model
         return $this->hasMany(Image::class);
     }
 
+
+
     public function uniqueViews(): HasMany
     {
         return $this->hasMany(UniqueInventoryView::class);
@@ -60,7 +62,7 @@ class Inventory extends Model
     public function getThumbnailAttribute($value)
     {
         if (! Str::startsWith($value, '/')) {
-            return '/' . $value;
+            return '/'.$value;
         }
         return $value;
     }

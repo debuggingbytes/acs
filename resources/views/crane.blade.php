@@ -21,7 +21,7 @@ Used {{$inventory->craneInventory->year}} {{$inventory->craneInventory->subject}
 vh-50
 @endsection
 @section('hero')
-  style='background-image: url("{{$inventory->thumbnail}}"); background-position: center center; background-size: cover;'
+  style='background-image: url("{{asset($inventory->thumbnail)}}"); background-position: center center; background-size: cover;'
 @endsection
 @section('h1-text')
   <h1 class="text-white uppercase font-bold text-2xl lg:text-4xl">Used {{$inventory->craneInventory->year}} {{$inventory->craneInventory->make}} {{$inventory->craneInventory->model}} for sale</h1>

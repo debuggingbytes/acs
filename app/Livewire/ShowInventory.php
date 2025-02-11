@@ -220,6 +220,10 @@ class ShowInventory extends Component
         $this->filterInventories();
         $this->loading = false;
     }
+    public function editInventory($id)
+    {
+        $this->redirectRoute('edit.inventory', ['id' => $id]);
+    }
 
     #[Layout('dashboard.app')]
     public function render()

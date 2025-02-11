@@ -10,9 +10,15 @@ use App\Livewire\Dashboard\AdminIndex;
 use App\Livewire\Dashboard\ModifyInventory;
 use App\Livewire\Profile\UserProfile;
 use App\Livewire\Bbcode;
-use App\Livewire\Quotes\Send;
+use App\Livewire\Quotes\CreateQuote;
+use App\Livewire\Quotes\ViewQuote;
 use App\Livewire\ShowInventory;
+use App\Livewire\System\Maintenance\ManageMaintenance;
+use App\Livewire\Quotes\ShowQuotes;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -27,9 +33,10 @@ use Illuminate\Support\Facades\Route;
 
 
 // Home Route
-Route::get('/', function () {
+Route::get('/', function ($secret = null) {
     return view('home');
 })->name('home');
+
 
 // All routes based around inventory
 
@@ -67,15 +74,23 @@ Route::middleware(['auth:sanctum', 'account.auth'])->group(function () {
         Route::get('/inventory/add/equipment', AddEquipmentInventory::class)->name('add.equipment.inventory');
         Route::get('/inventory/show', ShowInventory::class)->name('show.inventory');
         Route::get('/inventory/{id}/edit', ModifyInventory::class)->name('edit.inventory');
-
-        // User management
+        // website management
+        Route::get('/maintenance/manage', ManageMaintenance::class)->name('dashboard.website.manage');
+        Route::get('/maintenance/database')->name('dashboard.website.database');
+        Route::get('/maintenance/users')->name('dashboard.website.users');
+        Route::get('/maintenance/settings')->name('dashboard.website.settings');
+        // Business Tools
         // Quote Management
-        Route::get('/quotes', Send::class)->name('quotes');
-        Route::get('/quotes/create/{id}/', Send::class)->name('quote.create');
+        Route::get('/quotes', ShowQuotes::class)->name('quotes.home');
+        Route::get('/quotes/{id}/view/', ViewQuote::class)->name('quote.view');
+        Route::get('/quotes/create/{id}/', CreateQuote::class)->name('quote.create');
+        // Bills of Sale
+        Route::get('/billing')->name('billing.home');
+
+
+
     });
-    // Route::get('/test', function(){
-    //     throw new \Exception('This is a test');
-    // });
+
 });
 
 Route::get('/sitemap.xml', [SitemapGenerator::class, 'index']);
@@ -86,3 +101,16 @@ Route::get('/login', function () {
 Route::post('/login', [UserController::class, 'loginUser'])->name('login.user');
 Route::post('/logout', [UserController::class, 'logoutUser'])->name('logout.user');
 
+Route::get('/test', function () {
+
+    PDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'allowedRemoteHosts' => ['placeholder.com/']]);
+
+    $pdf = PDF::loadView('pdf.test');
+
+    return new StreamedResponse(function () use ($pdf) {
+        echo $pdf->output();
+    }, 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="test.pdf"', // Use 'inline' for viewing in browser
+    ]);
+});

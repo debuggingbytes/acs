@@ -1,25 +1,19 @@
 <?php
 
-namespace App\View\Components\forms;
+namespace App\View\Components\Dashboard;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class CheckboxToggle extends Component
+class sidebar extends Component
 {
     /**
      * Create a new component instance.
      */
-    public string $label;
-
-    public bool $livewire;
-
-    public function __construct($label, $livewire)
+    public function __construct()
     {
         //
-        $this->label = $label;
-        $this->livewire = $livewire;
     }
 
     /**
@@ -27,6 +21,6 @@ class CheckboxToggle extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.forms.checkbox-toggle');
+        return view('components.dashboard.sidebar');
     }
 }

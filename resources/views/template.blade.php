@@ -31,7 +31,7 @@
     {{-- Google Icons --}}
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-1616.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
     <link rel="manifest" href="{{asset('site.webmanifest')}}">
     <link rel="mask-icon" href="{{asset('safari-pinned-tab.svg')}}" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
@@ -56,9 +56,7 @@
         <!-- Hero Section -->
         <div class="p-12 relative overflow-hidden bg-no-repeat bg-cover @yield('vh')">
             <livewire:system.maintenance.maintenance />
-
-            @yield('hero')
-            <div class="absolute top-0 right-0 bottom-0 left-0 w-full h-full overflow-hidden bg-fixed"
+            <div class="absolute top-0 right-0 bottom-0 left-0 w-full h-full overflow-hidden bg-fixed" @yield('hero')
                 style="background-color: rgba(0, 0, 0, 0.5);">
                 <div class="flex justify-center items-center h-full w-3/4 lg:w-auto lg:px-20 mx-auto gap-10">
                     {{-- Call To Action --}}
@@ -76,7 +74,7 @@
     </main>
     <!-- end main content -->
     <x-Footer />
-    <script src="{{ asset('/js/scripts.js') }}" data-navigate-once></script>
+    <script src="{{ asset('js/scripts.js') }}" data-navigate-once></script>
     {{--
     <script src="{{ mix('/js/app.js') }}"></script> --}}
 

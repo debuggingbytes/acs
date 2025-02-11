@@ -6,56 +6,59 @@ use App\Models\Maintenance\Maintenance as MaintenanceModel;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Illuminate\Support\Facades\Session; // Import Session
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
-
 
 class Maintenance extends Component
 {
-
     public bool $maintenance = false;
     public $maintenanceData;
     public MaintenanceModel $maintenanceModel;
 
     public function mount()
     {
-
-        $now = Carbon::now();
-        $twentyFourHoursAgo = $now->copy()->subHours(24);
-
-        $this->maintenanceData = MaintenanceModel::where('start_date', '>=', $twentyFourHoursAgo)
-            ->where('is_active', true)
-            ->where('is_completed', false)
+        $this->maintenanceData = MaintenanceModel::where('is_active', true)
+            ->where('start_date', '>=', Carbon::now())
             ->first();
 
         if ($this->maintenanceData) {
-            $this->maintenance = true;
-            Session::put('maintenance_mode', $this->maintenance); // Store in session
+            // For new visitors (no session), set maintenance to true
+            if (! Session::has('maintenance_mode')) {
+                $this->maintenance = true;
+                Session::put('maintenance_mode', true);
+            } else {
+                // For returning visitors, use their session value
+                $this->maintenance = Session::get('maintenance_mode');
+            }
         }
-        $this->maintenance = Session::get('maintenance_mode');
-
-
     }
 
     #[On('startMaintenance')]
     public function startMaintenance()
     {
         $this->maintenance = true;
-        Session::put('maintenance_mode', $this->maintenance); // Store in session
+        Session::put('maintenance_mode', true);
     }
 
     #[On('endMaintenance')]
     public function endMaintenance()
     {
         $this->maintenance = false;
-        Session::forget('maintenance_mode'); // Store in session
+        Session::forget('maintenance_mode');
+    }
+
+    public function closeMaintenanceBanner()
+    {
+        $this->maintenance = false;
+        Session::put('maintenance_mode', false);
     }
 
     #[Layout('dashboard.app')]
     public function render()
     {
         return view('livewire.system.maintenance.maintenance', [
-            'maintenance' => $this->maintenanceData
+            'maintenanceData' => $this->maintenanceData,
+            'maintenance' => $this->maintenance
         ]);
     }
 }
