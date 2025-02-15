@@ -1,14 +1,14 @@
 <div x-data="{ open: false }">
   <!-- Mobile menu button -->
-  <button @click="open = !open" class="md:hidden px-2 py-1 bg-cyan-600 rounded-md">
+  <button @click="open = !open" class="md:hidden px-2 py-1 bg-cyan-600 rounded-md absolute top-1/2 -translate-y-1/2 right-2">
     <img :src="open 
       ? '{{asset('img/icons/menu-open.svg')}}' 
       : '{{asset('img/icons/menu-closed.svg')}}'" 
-      alt="toggle navigation" width="32px" height="32px" class="menuIcon">
+      alt="toggle navigation" width="32px" height="32px" >
   </button>
 
   <!-- Navigation menu -->
-  <div :class="{'hidden': !open}" class="justify-between items-center w-1/2 md:flex md:w-auto md:order-1">
+  <div :class="{'hidden': !open}" class="justify-between items-center w-full md:flex md:w-auto md:order-1">
     <ul class="flex flex-col p-4 mt-6 bg-gray-50 rounded-lg border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-transparent items-center">
       <li>
         <a wire:navigate @click="open = false" href="{{ route('home') }}"

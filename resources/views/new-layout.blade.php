@@ -48,7 +48,7 @@
     <header class="bg-radial-[at_85%_55%] from-bg-cyan-700 to-sky-800 to-75% h-[80svh] flex flex-col">
         <nav
             class="bg-gradient-to-b from-slate-900 to-gray-700 sm:px-4 py-2.5 dark:bg-gray-900 w-full z-20 sticky top-0 border-b border-gray-200 dark:border-gray-600">
-            <div class="container flex flex-wrap justify-between items-center mx-auto">
+            <div class="container md:flex md:flex-wrap md:justify-between md:items-center md:mx-auto p-2">
                 <a href="https://albertacraneservice.com/" class="flex items-center">
                     <img src="{{ asset('img/logo.png') }}" class="mr-3 h-16"
                         alt="Used Cranes | Alberta Crane Service">
