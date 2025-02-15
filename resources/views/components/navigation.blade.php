@@ -1,6 +1,6 @@
 <div x-data="{ open: false }">
   <!-- Mobile menu button -->
-  <button @click="open = !open" class="md:hidden px-2 py-1 bg-cyan-600 rounded-md absolute top-1/2 -translate-y-1/2 right-2">
+  <button @click="open = !open" class="md:hidden px-2 py-1 bg-cyan-600 rounded-md absolute top-7 right-2">
     <img :src="open 
       ? '{{asset('img/icons/menu-open.svg')}}' 
       : '{{asset('img/icons/menu-closed.svg')}}'" 
