@@ -25,6 +25,7 @@ class ManageMaintenance extends Component
     public $is_completed;
     #[AttributesSession]
     public bool $maintenanceMode = false;
+    public bool $debugMode = false;
 
     public function getMaintenances()
     {
@@ -116,7 +117,7 @@ class ManageMaintenance extends Component
 
         Session::put('maintenance_secret', $secret);
 
-        $bypassUrl = URL::signedRoute('home.secret', [$secret]);
+        $bypassUrl = URL::signedRoute('home', [$secret]);
         Session::put('maintenance_bypass_url', $bypassUrl);
 
 
@@ -154,6 +155,17 @@ class ManageMaintenance extends Component
         } else {
             session()->flash('status', ['message' => 'Application Optimization Failed.', 'type' => 'negative', 'title' => 'Error']);
         }
+    }
+
+    public function debugMode()
+    {
+        $this->debugMode = ! $this->debugMode;
+        if ($this->debugMode) {
+            config(['app.debug' => true]);
+        } else {
+            config(['app.debug' => false]);
+        }
+
     }
 
     public function render()

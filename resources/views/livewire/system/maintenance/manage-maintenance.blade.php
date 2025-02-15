@@ -56,6 +56,13 @@
                 Optimize Server
             </button>
         </div>
+        <div class="bg-slate-200 rounded-md shadow-md p-4 text-gray-700 h-full flex flex-col items-center justify-between">
+            <p class="text-sm mb-2">If you have updated the website and something is not displaying properly, clear the cache</p>
+            <button  wire:click="artisanOptimize"
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Debug Mode
+            </button>
+        </div>
     </div>
     <div class="mt-10">
         <h3 class="text-xl font-semibold">Schedule Maintenance</h3>

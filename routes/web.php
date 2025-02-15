@@ -15,6 +15,7 @@ use App\Livewire\Quotes\ViewQuote;
 use App\Livewire\ShowInventory;
 use App\Livewire\System\Maintenance\ManageMaintenance;
 use App\Livewire\Quotes\ShowQuotes;
+use App\Livewire\System\SiteSettings;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\System\Quote;
@@ -76,7 +77,7 @@ Route::middleware(['auth:sanctum', 'account.auth'])->group(function () {
         Route::get('/maintenance/manage', ManageMaintenance::class)->name('dashboard.website.manage');
         Route::get('/maintenance/database')->name('dashboard.website.database');
         Route::get('/maintenance/users')->name('dashboard.website.users');
-        Route::get('/maintenance/settings')->name('dashboard.website.settings');
+        Route::get('/maintenance/settings', SiteSettings::class)->name('dashboard.website.settings');
         // Business Tools
         // Quote Management
         Route::get('/quotes', ShowQuotes::class)->name('quotes.home');
