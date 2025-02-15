@@ -25,8 +25,8 @@
                 }
 
             @endphp
-            <div class="block w-5/6 uppercase py-2 md:py-0 truncate text-white">
-            <a href='{{ route($route, ['id'=> $id, 'slug' => $slugName]) }}' title="{{$year}} {{$subject}}" class="text-white
+            <div class="block uppercase py-2 md:py-0 text-white">
+            <a href='{{ route($route, ['id'=> $id, 'slug' => $slugName]) }}' title="{{$year}} {{$subject}}" class="hover:text-orange-500 text-white
             py-2">{{$year}} - {{ $subject }}</a>
         </div>
         @endforeach
