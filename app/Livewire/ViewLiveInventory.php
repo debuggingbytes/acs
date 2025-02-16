@@ -8,6 +8,8 @@ use App\Models\Inventory;
 use Illuminate\Support\Facades\DB;  // Import DB
 use Illuminate\Support\Facades\Cache;  // Import DB
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
+
 
 class ViewLiveInventory extends Component
 {
@@ -21,6 +23,13 @@ class ViewLiveInventory extends Component
     public $selectedMake;
     public $selectedModel;
     public $selectedYear;
+    public $view = "grid";
+
+    public function updatedView($value)
+    {
+        Session::put('inventory_view', $value); // Save to session
+    }
+
 
     public function searchInventory()
     {
@@ -130,7 +139,7 @@ class ViewLiveInventory extends Component
 
     public function filterInventories()
     {
-        $cacheKey = 'inventory_filter:'.md5(serialize([$this->selectedMake, $this->selectedModel, $this->selectedYear]));
+        $cacheKey = 'inventory_search_v1:'.hash('sha256', serialize([$this->query, $this->selectedMake, $this->selectedModel, $this->selectedYear]));
         $cacheTime = now()->addHours(20);
 
         $this->inventories = Cache::remember($cacheKey, $cacheTime, function () {
@@ -193,6 +202,7 @@ class ViewLiveInventory extends Component
         $this->loadFilterOptions(); // New method to load filter options
         $this->inventories = $this->performSearch();
         $this->totalResults = $this->inventories->count();
+        $this->view = Session::get('inventory_view', 'grid');
 
     }
 

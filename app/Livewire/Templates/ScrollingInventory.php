@@ -3,13 +3,19 @@
 namespace App\Livewire\Templates;
 
 use App\Models\Inventory;
-use Illuminate\Support\Facades\Cache; // Import Cache
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+
+/**
+ * Class ScrollingInventory
+ * Renders a scrolling inventory of featured cranes
+ *
+ */
 
 class ScrollingInventory extends Component
 {
     public $cranes;
-    public $currentIndex =0;
+    public $currentIndex = 0;
     public $autoplayInterval = 5000;
 
     public function mount()
@@ -28,19 +34,21 @@ class ScrollingInventory extends Component
 
     }
     public function getCurrentCraneImages()
-{
-    $crane = $this->cranes[$this->currentIndex];
-    return [
-        'main' => $crane->images[0]->image_path ?? 'path/to/fallback.jpg',
-        'secondary' => $crane->images[1]->image_path ?? 'path/to/fallback.jpg',
-        'tertiary' => $crane->images[3]->image_path ?? 'path/to/fallback.jpg',
-    ];
-}
+    {
+        $crane = $this->cranes[$this->currentIndex];
+        return [
+            'main' => $crane->images[0]->image_path ?? 'path/to/fallback.jpg',
+            'secondary' => $crane->images[1]->image_path ?? 'path/to/fallback.jpg',
+            'tertiary' => $crane->images[3]->image_path ?? 'path/to/fallback.jpg',
+        ];
+    }
 
-    public function next(){
+    public function next()
+    {
         $this->currentIndex = ($this->currentIndex + 1) % count($this->cranes);
     }
-    public function previous(){
+    public function previous()
+    {
         $this->currentIndex = ($this->currentIndex - 1 + count($this->cranes)) % count($this->cranes);
     }
 
