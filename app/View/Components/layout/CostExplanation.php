@@ -6,13 +6,14 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Intro extends Component
+class CostExplanation extends Component
 {
     /**
      * Create a new component instance.
      */
-    public function __construct(public array $types)
+    public function __construct()
     {
+        //
     }
 
     /**
@@ -20,6 +21,6 @@ class Intro extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.layout.intro');
+        return view('components.layout.cost-explanation');
     }
 }

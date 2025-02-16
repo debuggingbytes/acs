@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components\layout;
+namespace App\View\Components\Navigation;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class CostExplaination extends Component
+class NavLink extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class CostExplaination extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.layout.cost-explaination');
+        return view('components.navigation.nav-link');
     }
 }

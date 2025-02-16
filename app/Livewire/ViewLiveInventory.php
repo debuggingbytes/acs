@@ -139,7 +139,7 @@ class ViewLiveInventory extends Component
 
     public function filterInventories()
     {
-        $cacheKey = 'inventory_filter:'.md5(serialize([$this->selectedMake, $this->selectedModel, $this->selectedYear]));
+        $cacheKey = 'inventory_search_v1:'.hash('sha256', serialize([$this->query, $this->selectedMake, $this->selectedModel, $this->selectedYear]));
         $cacheTime = now()->addHours(20);
 
         $this->inventories = Cache::remember($cacheKey, $cacheTime, function () {
