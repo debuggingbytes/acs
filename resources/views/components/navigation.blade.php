@@ -1,5 +1,6 @@
 <div x-data="{ open: false }">
   <!-- Mobile menu button -->
+
   <button @click="open = !open" class="md:hidden px-2 py-1 bg-cyan-600 rounded-md absolute top-7 right-2 z-50">
     <img :src="open
       ? '{{asset('img/icons/menu-open.svg')}}'
@@ -9,6 +10,7 @@
 
   <!-- Navigation menu -->
   <div :class="{'hidden': !open}" class="justify-between items-center w-full md:w-1/2 md:flex md:order-1">
+
     <ul class="flex flex-col p-4 mt-6 bg-gray-50 rounded-lg border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-transparent items-center">
       <li>
         <x-navigation.nav-link route="home" routeName="home">Home</x-navigation.nav-link>
