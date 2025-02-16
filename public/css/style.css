@@ -7,16 +7,6 @@
 */
 @import url(https://fonts.googleapis.com/css?family=Nunito);
 
-:root {
-  --paddingBefore: 90px;
-}
-
-/* Header Fix for large screens */
-header::before {
-  content: '';
-  height: var(--paddingBefore);
-  display: block;
-}
 @media (max-width: 768px){
   header::before {
     content: '';

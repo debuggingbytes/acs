@@ -1,30 +1,32 @@
 <div x-data="{ open: false }">
   <!-- Mobile menu button -->
-  <button @click="open = !open" class="md:hidden px-2 py-1 bg-cyan-600 rounded-md">
+  <button @click="open = !open" class="md:hidden px-2 py-1 bg-cyan-600 rounded-md absolute top-7 right-2">
     <img :src="open 
       ? '{{asset('img/icons/menu-open.svg')}}' 
       : '{{asset('img/icons/menu-closed.svg')}}'" 
-      alt="toggle navigation" width="32px" height="32px" class="menuIcon">
+      alt="toggle navigation" width="32px" height="32px">
   </button>
 
   <!-- Navigation menu -->
-  <div :class="{'hidden': !open}" class="justify-between items-center w-1/2 md:flex md:w-auto md:order-1">
+  <div :class="{'hidden': !open}" class="justify-between items-center w-full md:w-1/2 md:flex md:order-1">
     <ul class="flex flex-col p-4 mt-6 bg-gray-50 rounded-lg border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-transparent items-center">
       <li>
         <a wire:navigate @click="open = false" href="{{ route('home') }}"
-          class="block py-2 pr-4 pl-3 text-gray-400 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-md uppercase">Home</a>
+          class="block py-2 pr-4 pl-3 text-gray-400 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 text-md uppercase @if(request()->routeIs("home")) text-orange-500 border-b border-orange-500 @endif">Home</a>
       </li>
       <li>
         <a wire:navigate @click="open = false" href="{{ route('inventory') }}"
-          class="block py-2 pr-4 pl-3 text-gray-400 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-md uppercase">Inventory</a>
+          class="block py-2 pr-4 pl-3 text-gray-400 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 text-md uppercase @if(request()->routeIs("inventory")) text-orange-500 border-b border-orange-500 @endif">Inventory</a>
       </li>
       <li>
         <a wire:navigate @click="open = false" href="{{ route('finance') }}"
-          class="block py-2 pr-4 pl-3 text-gray-400 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-md uppercase">Financing</a>
+          class="block py-2 pr-4 pl-3 text-gray-400 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 text-md uppercase
+          @if(request()->routeIs("finance")) text-orange-500 border-b border-orange-500 @endif">Financing</a>
       </li>
       <li>
         <a wire:navigate @click="open = false" href="{{ route('contact') }}"
-          class="block py-2 pr-4 pl-3 text-gray-400 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-md uppercase">Contact</a>
+          class="block py-2 pr-4 pl-3 text-gray-400 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 text-md uppercase
+          @if(request()->routeIs("contact")) text-orange-500 border-b border-orange-500 @endif">Contact</a>
       </li>
       <li>
         @auth

@@ -5,29 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>
-        @yield('title')
-    </title>
+    <meta name="description" content="Used Cranes and Equipment for Sale | Canada, USA | Alberta Crane Service">
+    <meta name="google-site-verification" content="zAV9dkbH17UMAnk68CJSTUezIECZu4tCUDu2e9ZVtJE" />
+    <title>@yield('title')</title>
     @yield('meta')
 
-    <!-- Google tag (gtag.js) -->
-    @production
-    @if (! Auth::user())
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-61207822-1"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() { dataLayer.push(arguments); }
-            gtag('js', new Date());
 
-            gtag('config', 'UA-61207822-1');
-        </script>
-        @endproduction
-    @endif
-    @livewireStyles
-    {{-- Tailwind CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    {{-- Custom CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @production
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-61207822-1"></script>
+        @if (! Auth::user())
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'UA-61207822-1');
+            </script>
+        @endif
+
+    @endproduction
     {{-- Google Icons --}}
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
@@ -38,48 +34,46 @@
     <meta name="theme-color" content="#ffffff">
     {{-- Font Awesome --}}
     <script src="https://kit.fontawesome.com/c5608c8cee.js" crossorigin="anonymous"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 
-<body class="bg-stone-300">
-    <header>
+<body class="bg-slate-200 relative">
+    {{-- Maintenance Banner when active --}}
+    <livewire:system.maintenance.maintenance />
+    {{-- Header & Navigation --}}
+    <header class="flex flex-col relative h-[50svh]">
+        <div class="max-h-[50svh] h-[50svh] absolute inset-0 overflow-hidden">  {{-- Add overflow-hidden to the container --}}
+            <div class="bg-radial-[at_85%_55%] from-bg-cyan-700 to-sky-800 to-75% absolute inset-0"></div>
+            @yield('hero-image')
+        </div>
         <nav
-            class="bg-gradient-to-b from-slate-900 to-gray-700 px-2 sm:px-4 py-2.5 dark:bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
-            <div class="container flex flex-wrap justify-between items-center mx-auto">
+            class="bg-gradient-to-b from-slate-900 to-gray-700 sm:px-4 py-2.5 w-full z-20 sticky top-0 border-b border-gray-200 ">
+            <div class="container md:flex md:flex-wrap md:justify-between md:items-center md:mx-auto p-2">
                 <a href="https://albertacraneservice.com/" class="flex items-center">
-                    <img src="{{ asset('img/acs-logo-new.png') }}" class="mr-3 h-6 sm:h-16"
+                    <img src="{{ asset('img/logo.png') }}" class="mr-3 h-16"
                         alt="Used Cranes | Alberta Crane Service">
                 </a>
                 <x-Navigation />
             </div>
         </nav>
-
-        <!-- Hero Section -->
-        <div class="p-12 relative overflow-hidden bg-no-repeat bg-cover @yield('vh')">
-            <livewire:system.maintenance.maintenance />
-            <div class="absolute top-0 right-0 bottom-0 left-0 w-full h-full overflow-hidden bg-fixed" @yield('hero')
-                style="background-color: rgba(0, 0, 0, 0.5);">
-                <div class="flex justify-center items-center h-full w-3/4 lg:w-auto lg:px-20 mx-auto gap-10">
-                    {{-- Call To Action --}}
-                    <div class="w-full text-center">
-                        @yield('h1-text')
-                    </div>
-                </div>
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-center h-full gap-10 z-10"> {{-- Center content --}}
+            <div class="w-full">
+                <h1 class="text-center text-2xl md:text-5xl font-bold text-white dark:text-gray-50 sm:text-center">
+                    <span class="block uppercase">
+                        @yield('h1-text')    
+                    </span>                    
+                </h1>
             </div>
         </div>
-        <!-- Hero Section -->
     </header>
-    <!-- Main content area -->
-    <main class="bg-slate-200 min-h-screen">
+    {{-- Main content --}}
+    <main class="py-12">
         @yield('content')
     </main>
-    <!-- end main content -->
-    <x-Footer />
-    <script src="{{ asset('js/scripts.js') }}" data-navigate-once></script>
-    {{--
-    <script src="{{ mix('/js/app.js') }}"></script> --}}
-
+    {{-- Footer --}}
+    <x-footer />
     @livewireScripts
-    @yield('scripts')
 </body>
 
 </html>

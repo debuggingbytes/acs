@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Storage;
 Route::get('/', function () {
     $types = CraneInventory::distinct()->pluck('type');
 
-    return view('new-layout', ['types' => $types]);
+    return view('home', ['types' => $types]);
 })->name('home');
 // Route::view('/', 'home')->name('home');
 
