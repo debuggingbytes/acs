@@ -1,7 +1,12 @@
 @import 'tailwindcss';
 
 @config '../../tailwind.config.js';
+@config '../../vendor/wireui/wireui/tailwind.config.js';
 @source "../views//**/*.blade.php";
+@source "../vendor/wireui/wireui/src/*.php";
+@source "../vendor/wireui/wireui/ts/**/*.ts";
+@source "../vendor/wireui/wireui/src/WireUi/**/*.php";
+@source "../vendor/wireui/wireui/src/Components/**/*.php";
 
 
 /*

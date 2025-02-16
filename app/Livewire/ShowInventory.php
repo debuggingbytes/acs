@@ -21,6 +21,7 @@ class ShowInventory extends Component
     public $models = [];
     public $years = [];
     public $loading = true;
+    
 
     protected $queryString = [
         'selectedMake' => ['except' => ''],

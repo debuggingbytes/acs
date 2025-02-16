@@ -10,6 +10,7 @@ use App\Livewire\Dashboard\AdminIndex;
 use App\Livewire\Dashboard\ModifyInventory;
 use App\Livewire\Profile\UserProfile;
 use App\Livewire\Bbcode;
+use App\Livewire\Inventory\DetailPage;
 use App\Livewire\Quotes\CreateQuote;
 use App\Livewire\Quotes\ViewQuote;
 use App\Livewire\ShowInventory;
@@ -49,7 +50,7 @@ Route::prefix('inventory')->group(function () {
     Route::get('/', [InventoryController::class, 'showInventory'])->name('inventory');
     Route::get('/category/{slug}', [InventoryController::class, 'showCategory'])->name('category');
     Route::get('/cranes', [InventoryController::class, 'showCranes'])->name('cranes');
-    Route::get('/crane/{id}/{slug}/', [InventoryController::class, 'showCrane'])->where('id', '[0-9]+')->name('crane');
+    Route::get('/crane/{id}/{slug}/', DetailPage::class)->where('id', '[0-9]+')->name('crane');
     Route::get('/parts', [InventoryController::class, 'showParts'])->name('parts');
     Route::get('/parts/{id}/{slug}/', [InventoryController::class, 'showPart'])->where('id', '[0-9]+')->name('part');
     Route::get('/equipment', [InventoryController::class, 'showEquipments'])->name('equipments');

@@ -1,17 +1,17 @@
 <?php
 
-namespace App\View\Components\layout;
+namespace App\View\Components\Inventory;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Intro extends Component
+class SpecificationsList extends Component
 {
     /**
      * Create a new component instance.
      */
-    public function __construct(public mixed $types)
+    public function __construct(public $specifications, public $columnCount = 2)
     {
     }
 
@@ -20,6 +20,6 @@ class Intro extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.layout.intro');
+        return view('components.inventory.specifications-list');
     }
 }
