@@ -11,7 +11,7 @@ class Intro extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public array $types)
+    public function __construct(public mixed $types)
     {
     }
 
