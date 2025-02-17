@@ -1,110 +1,74 @@
-<div class="w-full flex relative drop-shadow-lg max-h-3/4 cursor-pointer"
+<div class="w-full relative overflow-hidden rounded-lg shadow-lg"
      x-data="{ 
-        autoplay: null,
-        startAutoplay() {
-            this.autoplay = setInterval(() => $wire.next(), 5000)
-        },
-        stopAutoplay() {
-            clearInterval(this.autoplay)
-        }
+         autoplay: null,
+         startAutoplay() {
+             this.autoplay = setInterval(() => $wire.next(), 5000)
+         },
+         stopAutoplay() {
+             clearInterval(this.autoplay)
+         }
      }"
      x-init="startAutoplay()"
      @mouseenter="stopAutoplay()"
      @mouseleave="startAutoplay()"
      @keydown.arrow-right.window="$wire.next()"
      @keydown.arrow-left.window="$wire.previous()">
-     
-    
-    <div class="slide relative w-full">
-        <div class="bg-sky-700 p-0 md:p-2 w-full">
-            <div class="text-center uppercase text-white font-bold">
-                Featured Inventory
-            </div>
-        </div>
-        
-        <div class="w-full h-3/4 grid grid-flow-col grid-rows-3 gap-2 gap-2">
-            <div class="row-span-3 col-span-3 h-full w-full block">
-                <img 
-                    src="http://www.albertacraneservice.com/{{ $cranes[$currentIndex]->images[0]->image_path }}"
-                    alt="{{ $cranes[$currentIndex]->craneinventory->year }} {{ $cranes[$currentIndex]->craneinventory->subject }}"
-                    class="object-cover w-full h-full aspect-3/2"
-                    loading="lazy"
-                    x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-500"
-                    x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0">
-            </div>
-            
-            <div class="hidden md:block col-span-2">
-                <img 
-                    src="http://www.albertacraneservice.com/{{ $cranes[$currentIndex]->images[1]->image_path }}"
-                    alt="{{ $cranes[$currentIndex]->craneinventory->year }} {{ $cranes[$currentIndex]->craneinventory->subject }}"
-                    class="object-cover w-full h-full aspect-3/2"
-                    loading="lazy"
-                    x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-500"
-                    x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0">
-            </div>
-            <div class="hidden md:block col-span-2 row-span-2">
-                <img 
-                    src="http://www.albertacraneservice.com/{{ $cranes[$currentIndex]->images[2]->image_path }}"
-                    alt="{{ $cranes[$currentIndex]->craneinventory->year }} {{ $cranes[$currentIndex]->craneinventory->subject }}"
-                    class="object-cover w-full h-full aspect-3/2"
-                    loading="lazy"
-                    x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-500"
-                    x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0">
+
+    <div class="relative h-[300px] md:h-[400px] lg:h-[500px]">
+
+        <div wire:loading.block class="absolute inset-0 w-full h-full bg-gray-200 animate-pulse">  {{-- Skeleton Loader --}}
+            <div class="h-full w-full object-cover bg-gray-300"></div> {{-- Placeholder image --}}
+            <div class="absolute bottom-0 left-0 right-0 bg-gray-400/80 p-6 text-white">
+                <div class="h-8 bg-gray-500 rounded w-3/4 mb-2"></div> {{-- Placeholder title --}}
+                <div class="h-6 bg-gray-500 rounded w-1/2"></div> {{-- Placeholder button --}}
             </div>
         </div>
 
-        <div class="bg-sky-700 p-0 md:p-2 w-full flex items-center justify-center">
-            <span class="text-white font-bold tracking-wide flex gap-1 md:gap-4"
-                  x-transition:enter="transition ease-out duration-500"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100"
-                  x-transition:leave="transition ease-in duration-500"
-                  x-transition:leave-start="opacity-100"
-                  x-transition:leave-end="opacity-0">
-                {{ $cranes[$currentIndex]->craneinventory->year }} 
-                {{ $cranes[$currentIndex]->craneinventory->subject }}
-            </span>
-        </div>
+        <div wire:loading.remove> {{-- Show carousel only when loading is finished --}}
+            @foreach ($cranes as $index => $crane)
+                <div class="absolute inset-0 w-full h-full transition duration-500 ease-in-out"
+                     :class="{ 'opacity-100 z-10': {{ $currentIndex }} === {{ $index }}, 'opacity-0 z-0': {{ $currentIndex }} !== {{ $index }} }">
+                    <img src="http://www.albertacraneservice.com/{{ $crane->images[0]->image_path ?? '' }}"
+                         alt="{{ $crane->craneinventory->year ?? '' }} {{ $crane->craneinventory->subject ?? '' }}"
+                         class="object-cover w-full h-full"
+                         loading="lazy">
 
-        <!-- Navigation Controls -->
-        <div class="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 flex justify-between px-4">
-            <button class="bg-black bg-opacity-50 text-white p-2 rounded-full"
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                        <h3 class="text-xl font-bold mb-2">{{ $crane->craneinventory->year ?? '' }} {{ $crane->craneinventory->subject ?? '' }}</h3>
+                        <a href="{{ route('crane', ['id' => $crane->id, 'slug' => $crane->craneInventory->slugName]) }}" class="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-md text-sm font-medium transition duration-300">View Details</a>
+                    </div>
+                </div>
+            @endforeach
+        </div>  {{-- End wire:loading.remove --}}
+
+    </div>
+
+
+    <div class="absolute left-0 right-0 top-0 p-4 flex justify-between items-center z-20">
+        <div class="flex">
+            <button class="bg-black/50 hover:bg-black/70 text-white p-3 rounded-full mr-2 transition duration-300 cursor-pointer"
                     wire:click="previous"
                     @click="stopAutoplay(); setTimeout(() => startAutoplay(), 10000)">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
             </button>
-            
-            <button class="bg-black bg-opacity-50 text-white p-2 rounded-full"
+            <button class="bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition duration-300 cursor-pointer"
                     wire:click="next"
                     @click="stopAutoplay(); setTimeout(() => startAutoplay(), 10000)">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                <svg xmlns="http://www.w3.org/2d/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12h-18" />
                 </svg>
             </button>
         </div>
 
-        <!-- Pagination Dots -->
-        <div class="hidden md:block text-center mt-2">
-            @for ($i = 0; $i < count($cranes); $i++)
-                <button wire:click="$set('currentIndex', {{ $i }})"
-                        class="inline-block w-2 h-2 mx-1 rounded-full transition-colors duration-200"
-                        :class="{'bg-sky-700': {{ $currentIndex }} === {{ $i }}, 'bg-gray-400': {{ $currentIndex }} !== {{ $i }}}">
-                </button>
-            @endfor
+        <div class="flex space-x-2">
+            @foreach ($cranes as $index => $crane)
+                <button wire:click="$set('currentIndex', {{ $index }})"
+                        class="w-3 h-3 rounded-full transition-colors duration-300 cursor-pointer"
+                        :class="{'bg-cyan-600': {{ $currentIndex }} === {{ $index }}, 'bg-cyan-900 hover:bg-cyan-950': {{ $currentIndex }} !== {{ $index }}}"></button>
+            @endforeach
         </div>
     </div>
+
 </div>

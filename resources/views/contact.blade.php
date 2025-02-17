@@ -20,7 +20,7 @@
           {{-- Breadcrumb Navigation --}}
           <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg mb-10 bg-gray-50 shadow-md drop-shadow-md"  aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                <li><a href="{{ route('home') }}" class="hover:text-cyan-600">Home</a> > </li> 
+                <li><a href="{{ route('home') }}" class="hover:text-cyan-600">Home</a> &raquo; </li> 
                 <li><a href="{{ route('inventory') }}" class="hover:text-cyan-600">Contact Us</a></li>
             </ol>
         </nav>

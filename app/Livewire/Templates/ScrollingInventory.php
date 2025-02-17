@@ -20,6 +20,7 @@ class ScrollingInventory extends Component
 
     public function mount()
     {
+
         $this->cranes = Cache::remember('featured_cranes', 72000, function () { // Cache for 10 minutes (600 seconds)
             return Inventory::with([
                 'craneinventory',
@@ -54,6 +55,7 @@ class ScrollingInventory extends Component
 
     public function render()
     {
+        
         return view('livewire.templates.scrolling-inventory');
     }
 }
