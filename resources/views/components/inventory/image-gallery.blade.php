@@ -128,6 +128,10 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
+        @keydown.escape.window="showModal = false"
++        role="dialog"
++        aria-modal="true"
++        aria-labelledby="modal-title"
         class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-75 flex items-center justify-center"
         @click.self="showModal = false"
         x-cloak
