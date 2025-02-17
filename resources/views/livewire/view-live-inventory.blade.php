@@ -53,7 +53,7 @@
 
         <div class="mt-4">  {{-- Reset Button --}}
             <button wire:click.prevent="resetFilter"
-                    class="bg-cyan-700 hover:bg-cyan-800 text-white font-medium py-2 px-6 rounded-lg transition duration-300 ease-in-out">
+                    class="bg-cyan-700 hover:bg-cyan-800 text-white font-medium py-2 px-6 rounded-lg transition duration-300 ease-in-out cursor-pointer">
                 Reset Filters
             </button>
         </div>

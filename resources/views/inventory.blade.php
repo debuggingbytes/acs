@@ -15,12 +15,14 @@
 
 @section('content')
 
-    <section id='breadcrumbs' class="p-5">
-        <div class="text-start uppercase font-semibold font-xl text-cyan-800 break-words"><a
-                href="{{ route('home') }}">Home</a> > <a href="{{ route('inventory') }}">Inventory</a></div>
-    </section>
-    <section class="py-10">
-        <div class="md:container md:mx-auto p-4">
+<section class="py-10">
+    <div class="md:container md:mx-auto p-4">
+            <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 shadow-md drop-shadow-md" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li><a href="{{ route('home') }}" class="hover:text-cyan-600">Home</a> > </li> 
+                    <li><a href="{{ route('inventory') }}" class="hover:text-cyan-600">Inventory</a></li>
+                </ol>
+            </nav>
             <livewire:view-live-inventory />
         </div>
     </section>
