@@ -1,10 +1,3 @@
-{{--
-
-  ToDo: Hide all images which are not filtered by data-type
-
-  --}}
-
-{{-- @dd($inventories) --}}
   @extends('template')
 
   @section('title')
@@ -30,12 +23,16 @@
   @endsection
   @section('content')
 
-  <section id='breadcrumbs' class="p-5">
-    <div class="text-start uppercase font-semibold font-xl text-cyan-800"><a href="{{ route('home') }}">Home</a> > <a href="{{ route('inventory') }}">Inventory</a> > <a href="{{ route('category', ['slug' => $type->kebab_type]) }}">{{$type->ReadableType}}</a></div>
-  </section>
-
   <section class="py-10">
     <div class="md:container md:mx-auto p-4">
+      {{-- Breadcrumb Navigation --}}
+      <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 my-5 rounded-lg bg-gray-50 shadow-md drop-shadow-md"  aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li><a href="{{ route('home') }}" class="hover:text-cyan-600">Home</a> > </li> 
+            <li><a href="{{ route('inventory') }}" class="hover:text-cyan-600">Inventory</a> ></li>
+            <li class="text-cyan-600">{{ ucwords($type->readableType) }}</li>
+        </ol>
+    </nav>
       <div class="grid grid-flow-rows grid-cols-1 lg:grid-cols-3 grid-rows-max gap-5">
         @foreach ($inventories->sortByDesc(function ($inventory) {
             return [$inventory->is_featured ? 1 : 0, $inventory->inventoryable_type == "App\Models\CraneInventory" ? 1 : 0];
